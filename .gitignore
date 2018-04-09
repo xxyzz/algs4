@@ -5,3 +5,4 @@ queues/
 *.txt
 *.png
 LineSegment.*
+8puzzle/
