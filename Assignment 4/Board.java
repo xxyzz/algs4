@@ -6,18 +6,16 @@
  *
  ******************************************************************************/
 
-import java.util.Stack;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut; 
-import edu.princeton.cs.algs4.StdRandom;
-import java.util.Arrays;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
     private final int n;
     private final char[] board;
     private final int hamming;
     private final int manhattan;
-    private int blank = 0;
+    private int blank;
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) {
@@ -71,8 +69,8 @@ public class Board {
         int thisManhattan = 0;
         for (int i = 0; i < n * n; i++) {
             if (charBoard[i] != i + 1 && charBoard[i] != 0) {
-                // distances of row and col
-                thisManhattan += Math.abs(charBoard[i] / n - i / n) + Math.abs(charBoard[i] % n - i % n);
+                // distances of row and col, -1 !!
+                thisManhattan += Math.abs((charBoard[i] - 1) / n - i / n) + Math.abs((charBoard[i] - 1) % n - i % n);
             }
         }
         return thisManhattan;
@@ -83,16 +81,18 @@ public class Board {
         return hamming == 0;
     }
     // a board that is obtained by exchanging any pair of blocks
+    // Must return the same board every time when given the same argument, that's imutable board.
     public Board twin() {
         char[] copy = board.clone();
-        int a = StdRandom.uniform(n * n);
-        int b = StdRandom.uniform(n * n);
-        if (copy[a] != 0 && copy[b] != 0) {
-            exch(copy, a, b);
+        for (int i = 0; i < n * n - 1; i++) {
+            if (copy[i] != 0 && copy[i + 1] != 0) {
+                exch(copy, i, i + 1);
+                int thisHamming = getHamming(copy);
+                int thisManhattan = getManhattan(copy);
+                return new Board(copy, n, thisHamming, thisManhattan, blank);
+            }
         }
-        int thisHamming = getHamming(copy);
-        int thisManhattan = getManhattan(copy);
-        return new Board(copy, n, thisHamming, thisManhattan, blank);
+        return null;
     }
     // does this board equal y?
     public boolean equals(Object y) {
@@ -105,8 +105,7 @@ public class Board {
         if (y.getClass() != this.getClass()) {
             return false;
         }
-        Board that = (Board) y;
-        return Arrays.equals(this.board, that.board);
+        return new String(board).equals(new String(((Board) y).board));
     }
     // all neighboring boards
     public Iterable<Board> neighbors() {
@@ -154,7 +153,7 @@ public class Board {
         char[] copy = board.clone();
         exch(copy, blank, i);
         int thisHamming = getHamming(copy);
-        int thisManhattan = getHamming(copy);
+        int thisManhattan = getManhattan(copy);
         return new Board(copy, n, thisHamming, thisManhattan, i);
     }
 
@@ -170,8 +169,9 @@ public class Board {
         // StdOut.println(initial);
         // StdOut.println(initial.dimension());
         // StdOut.println(initial.hamming());
-        // StdOut.println(initial.manhattan());
-        StdOut.println(initial.equals(new Board(blocks)));
+        StdOut.println(initial.manhattan());
+        // StdOut.println(initial.twin());
+        // StdOut.println(initial.equals(new Board(blocks)));
         // Iterable<Board> result = initial.neighbors();
         // for (Board b : result) {
         //     StdOut.println(b.toString());
