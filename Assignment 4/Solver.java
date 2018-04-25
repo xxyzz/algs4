@@ -1,7 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 Solver.java
  *  Execution:    java-algs4 Solver
- *  Dependencies: 
+ *  Dependencies: Board.java
  *  
  *
  ******************************************************************************/

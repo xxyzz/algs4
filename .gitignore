@@ -6,3 +6,4 @@ queues/
 *.png
 LineSegment.*
 8puzzle/
+kdtree/
