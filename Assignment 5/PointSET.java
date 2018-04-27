@@ -9,6 +9,7 @@ import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdOut;
 
 public class PointSET {
     private final SET<Point2D> set;
@@ -72,16 +73,26 @@ public class PointSET {
             return null;
         }
         else {
-            double nearestDistance = Double.MAX_VALUE;
+            double nearestDistance = Double.POSITIVE_INFINITY;
             Point2D nearestPoint = null;
             for (Point2D point:set) {
-                if (point.distanceTo(p) < nearestDistance) {
+                double distance = point.distanceSquaredTo(p);
+                if (distance < nearestDistance) {
                     nearestPoint = point;
+                    nearestDistance = distance;
                 }
             }
             return nearestPoint;
         }
     }
- 
-    // public static void main(String[] args)                  // unit testing of the methods (optional) 
+    // unit testing of the methods (optional)
+    public static void main(String[] args) {
+        PointSET points = new PointSET();
+        points.insert(new Point2D(0.7, 0.2));
+        points.insert(new Point2D(0.5, 0.4));
+        points.insert(new Point2D(0.2, 0.3));
+        points.insert(new Point2D(0.4, 0.7));
+        points.insert(new Point2D(0.9, 0.6));
+        StdOut.println(points.nearest(new Point2D(1.0, 1.0)).x() + " " + points.nearest(new Point2D(1.0, 1.0)).y());
+    }
 }
