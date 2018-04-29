@@ -68,11 +68,12 @@ public class KdTree {
                 }
                 else return insert(node.rt, p, !vertical);
             }
-            else if (Double.compare(p.y(), node.p.y()) != 0) {
-                newNode = new Node(p, new RectHV(p.x(), node.rect.ymin(), node.rect.xmax(), node.rect.ymax()), null, null);
+            else if (node.rt == null && Double.compare(p.y(), node.p.y()) != 0) {
+                newNode = new Node(p, new RectHV(node.p.x(), node.rect.ymin(), node.rect.xmax(), node.rect.ymax()), null, null);
                 node.rt = newNode;
                 size++;
             }
+            else return insert(node.rt, p, !vertical);
         }
         else {
             if (p.y() < node.p.y()) {
@@ -91,11 +92,12 @@ public class KdTree {
                 }
                 else return insert(node.rt, p, !vertical);
             }
-            else if (Double.compare(p.x(), node.p.x()) != 0) {
-                newNode = new Node(p, new RectHV(node.rect.xmin(), p.y(), node.rect.xmax(), node.rect.ymax()), null, null);
+            else if (node.rt == null && Double.compare(p.x(), node.p.x()) != 0) {
+                newNode = new Node(p, new RectHV(node.rect.xmin(), node.p.y(), node.rect.xmax(), node.rect.ymax()), null, null);
                 node.rt = newNode;
                 size++;
             }
+            else return insert(node.rt, p, !vertical);
         }
         return root;
     }
@@ -129,15 +131,13 @@ public class KdTree {
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.setPenRadius(0.01);
             node.p.draw();
+            StdDraw.setPenRadius();
             if (vertical) {
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.setPenRadius();
                 StdDraw.line(node.p.x(), node.rect.ymin(), node.p.x(), node.rect.ymax());
             }
             else {
                 StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.setPenRadius();
-                StdDraw.setPenRadius();
                 StdDraw.line(node.rect.xmin(), node.p.y(), node.rect.xmax(), node.p.y());
             }
             draw(node.lb, !vertical);
@@ -207,9 +207,9 @@ public class KdTree {
         kdtree.insert(new Point2D(0.25, 0.5));
         kdtree.insert(new Point2D(1.0, 0.5));
         StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.25, 0.5))));
-        // StdOut.println(String.valueOf(kdtree.size()));
+        StdOut.println(String.valueOf(kdtree.size()));
         // StdOut.println(Boolean.toString(kdtree.isEmpty()));
         // StdOut.println(kdtree.nearest(new Point2D(1.0, 1.0)).x() + " " + kdtree.nearest(new Point2D(1.0, 1.0)).y());
-        // kdtree.draw();
+        kdtree.draw();
     }
 }
