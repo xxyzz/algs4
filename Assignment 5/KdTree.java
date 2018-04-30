@@ -73,7 +73,7 @@ public class KdTree {
                 node.rt = newNode;
                 size++;
             }
-            else return insert(node.rt, p, !vertical);
+            else if (node.rt != null && Double.compare(p.y(), node.p.y()) != 0) return insert(node.rt, p, !vertical);
         }
         else {
             if (p.y() < node.p.y()) {
@@ -97,7 +97,7 @@ public class KdTree {
                 node.rt = newNode;
                 size++;
             }
-            else return insert(node.rt, p, !vertical);
+            else if (node.rt != null && Double.compare(p.x(), node.p.x()) != 0) return insert(node.rt, p, !vertical);
         }
         return root;
     }
@@ -117,7 +117,7 @@ public class KdTree {
         else if (node.lb != null && node.lb.rect.contains(p)) {
             return contains(node.lb, p);
         }
-        else return false;
+        return false;
     }
 
     // draw all points to standard draw 
@@ -154,8 +154,8 @@ public class KdTree {
 
     private void range(Node node, RectHV rect, Stack<Point2D> points, boolean vertical) {
         if (node == null) return;
-        if (rect.contains(node.p)) points.push(node.p);
         if (rect.intersects(node.rect)) {
+            if (rect.contains(node.p)) points.push(node.p);
             range(node.rt, rect, points, !vertical);
             range(node.lb, rect, points, !vertical);
         }
@@ -170,12 +170,9 @@ public class KdTree {
 
     private Point2D nearest(Node node, Point2D p, Point2D nearestPoint) {
         if (node == null) return nearestPoint;
-        Double nearestDistance = nearestPoint.distanceSquaredTo(p);
-        if (node.p.distanceSquaredTo(p) < nearestDistance) {
-            nearestPoint = node.p;
-            nearestDistance = nearestPoint.distanceSquaredTo(p);
-        }
+        double nearestDistance = nearestPoint.distanceSquaredTo(p);
         if (node.rect.distanceSquaredTo(p) < nearestDistance) {
+            if (node.p.distanceSquaredTo(p) < nearestDistance) nearestPoint = node.p;
             nearestPoint = nearest(node.rt, p, nearestPoint);
             nearestPoint = nearest(node.lb, p, nearestPoint);
         }
@@ -190,15 +187,15 @@ public class KdTree {
             Point2D p = new Point2D(in.readDouble(), in.readDouble());
             kdtree.insert(p);
         }
-        kdtree.nearest(new Point2D(0.5, 1.0));
-        // Iterable<Point2D> points = kdtree.range(new RectHV(0.119, 0.129, 0.711, 0.239));
+        // kdtree.nearest(new Point2D(0.5, 1.0));
+        // Iterable<Point2D> points = kdtree.range(new RectHV(0.375, 0.875, 0.625, 1.0));
         // for (Point2D point:points) {
         //     StdOut.println(point.x() + " " + point.y());
         // }
-        // StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.875, 0.25))));
+        // StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.5, 0.375))));
         // StdOut.println(String.valueOf(kdtree.size()));
         // StdOut.println(Boolean.toString(kdtree.isEmpty()));
-        StdOut.println("Nearest point: " + kdtree.nearest(new Point2D(0.5, 1.0)).x() + " " + kdtree.nearest(new Point2D(0.5, 1.0)).y());
+        StdOut.println("Nearest point: " + kdtree.nearest(new Point2D(0.873, 0.477)).x() + " " + kdtree.nearest(new Point2D(0.873, 0.477)).y());
         // kdtree.draw();
     }
 }
