@@ -105,17 +105,41 @@ public class KdTree {
     // does the set contain point p? 
     public boolean contains(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
-        return contains(root, p);
+        return contains(root, p, true);
     }
 
-    private boolean contains(Node node, Point2D p) {
+    private boolean contains(Node node, Point2D p, boolean vertical) {
         if (node == null) return false;
-        if (Double.compare(node.p.x(), p.x()) == 0 && Double.compare(node.p.y(), p.y()) == 0) return true;
-        else if (node.rt != null && node.rt.rect.contains(p)) {
-            return contains(node.rt, p);
+        // if (Double.compare(node.p.x(), p.x()) == 0 && Double.compare(node.p.y(), p.y()) == 0) return true;
+        // else if (node.rt != null && node.rt.rect.contains(p)) {
+        //     return contains(node.rt, p);
+        // }
+        // else if (node.lb != null && node.lb.rect.contains(p)) {
+        //     return contains(node.lb, p);
+        // }
+        double pointX = p.x();
+        double pointY = p.y();
+        double nodeX = node.p.x();
+        double nodeY = node.p.y();
+        if (vertical) {
+            if (pointX < nodeX) {
+                return contains(node.lb, p, !vertical);
+            }
+            else if (pointX > nodeX) {
+                return contains(node.rt, p, !vertical);
+            }
+            else if (Double.compare(pointY, nodeY) == 0) return true;
+            else if (node.rt != null) return contains(node.rt, p, !vertical);
         }
-        else if (node.lb != null && node.lb.rect.contains(p)) {
-            return contains(node.lb, p);
+        else {
+            if (pointY < nodeY) {
+                return contains(node.lb, p, !vertical);
+            }
+            else if (pointY > nodeY) {
+                return contains(node.rt, p, !vertical);
+            }
+            else if (Double.compare(pointX, nodeX) == 0) return true;
+            else if (node.rt != null) return contains(node.rt, p, !vertical);
         }
         return false;
     }
@@ -148,11 +172,11 @@ public class KdTree {
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new IllegalArgumentException();
         Stack<Point2D> points = new Stack<>();
-        range(root, rect, points, true);
+        range(root, rect, points);
         return points;
     }
 
-    private void range(Node node, RectHV rect, Stack<Point2D> points, boolean vertical) {
+    private void range(Node node, RectHV rect, Stack<Point2D> points) {
         if (node == null) return;
         if (rect.intersects(node.rect)) {
             if (rect.contains(node.p)) points.push(node.p);
@@ -164,7 +188,7 @@ public class KdTree {
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
-        if (isEmpty()) return null;          
+        if (isEmpty()) return null;
         return nearest(root, p, root.p);
     }
 
@@ -192,10 +216,10 @@ public class KdTree {
         // for (Point2D point:points) {
         //     StdOut.println(point.x() + " " + point.y());
         // }
-        // StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.5, 0.375))));
+        StdOut.println(Boolean.toString(kdtree.contains(new Point2D(1.0, 0.75))));
         // StdOut.println(String.valueOf(kdtree.size()));
         // StdOut.println(Boolean.toString(kdtree.isEmpty()));
-        StdOut.println("Nearest point: " + kdtree.nearest(new Point2D(0.873, 0.477)).x() + " " + kdtree.nearest(new Point2D(0.873, 0.477)).y());
-        // kdtree.draw();
+        // StdOut.println("Nearest point: " + kdtree.nearest(new Point2D(1.0, 0.75)).x() + " " + kdtree.nearest(new Point2D(1.0, 0.75)).y());
+        kdtree.draw();
     }
 }
