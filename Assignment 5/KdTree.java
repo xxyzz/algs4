@@ -9,8 +9,8 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdOut;
-import jdk.nashorn.internal.runtime.RecompilableScriptFunctionData;
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.In;
 
 public class KdTree {
     private Node root;
@@ -112,11 +112,11 @@ public class KdTree {
         if (p == null) throw new IllegalArgumentException(); 
         if (node == null) return false;
         if (Double.compare(node.p.x(), p.x()) == 0 && Double.compare(node.p.y(), p.y()) == 0) return true;
-        else if (node.lb != null && node.lb.rect.contains(p) && (p.x() < node.p.x() || p.y() < node.p.y())) {
-            return contains(node.lb, p);
-        }
-        else if (node.rt != null && node.rt.rect.contains(p) && (p.x() > node.p.x() || p.y() > node.p.y())) {
+        else if (node.rt != null && node.rt.rect.contains(p)) {
             return contains(node.rt, p);
+        }
+        else if (node.lb != null && node.lb.rect.contains(p)) {
+            return contains(node.lb, p);
         }
         else return false;
     }
@@ -156,16 +156,9 @@ public class KdTree {
     private void range(Node node, RectHV rect, Stack<Point2D> points, boolean vertical) {
         if (node == null) return;
         if (rect.contains(node.p)) points.push(node.p);
-        RectHV nodeRectHV;
-        if (vertical) {
-            nodeRectHV = new RectHV(node.p.x(), node.rect.ymin(), node.p.x(), node.rect.ymax());
-        }
-        else {
-            nodeRectHV = new RectHV(node.rect.xmin(), node.p.y(), node.rect.xmax(), node.p.y());
-        }
-        if (rect.intersects(nodeRectHV)) {
-            range(node.lb, rect, points, !vertical);
+        if (rect.intersects(node.rect)) {
             range(node.rt, rect, points, !vertical);
+            range(node.lb, rect, points, !vertical);
         }
     }
 
@@ -196,20 +189,19 @@ public class KdTree {
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         KdTree kdtree = new KdTree();
-        kdtree.insert(new Point2D(0.75, 1.0));
-        kdtree.insert(new Point2D(0.5, 0.25));
-        kdtree.insert(new Point2D(0.25, 1.0));
-        kdtree.insert(new Point2D(0.75, 0.25));
-        kdtree.insert(new Point2D(0.75, 0.75));
-        kdtree.insert(new Point2D(0.25, 0.75));
-        kdtree.insert(new Point2D(0.0, 0.0));
-        kdtree.insert(new Point2D(1.0, 0.0));
-        kdtree.insert(new Point2D(0.25, 0.5));
-        kdtree.insert(new Point2D(1.0, 0.5));
-        StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.25, 0.5))));
-        StdOut.println(String.valueOf(kdtree.size()));
+        In in = new In(args[0]);
+        while (!in.isEmpty()) {
+            Point2D p = new Point2D(in.readDouble(), in.readDouble());
+            kdtree.insert(p);
+        }
+        Iterable<Point2D> points = kdtree.range(new RectHV(0.119, 0.129, 0.711, 0.239));
+        for (Point2D point:points) {
+            StdOut.println(point.x() + " " + point.y());
+        }
+        // StdOut.println(Boolean.toString(kdtree.contains(new Point2D(0.875, 0.25))));
+        // StdOut.println(String.valueOf(kdtree.size()));
         // StdOut.println(Boolean.toString(kdtree.isEmpty()));
         // StdOut.println(kdtree.nearest(new Point2D(1.0, 1.0)).x() + " " + kdtree.nearest(new Point2D(1.0, 1.0)).y());
-        kdtree.draw();
+        // kdtree.draw();
     }
 }
