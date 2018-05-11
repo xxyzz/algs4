@@ -1,4 +1,4 @@
-# [Algorithms, 4th Edition](https://algs4.cs.princeton.edu/home/)
+# [Coursera Algorithms](https://algs4.cs.princeton.edu/home/)
 
 ```
 // Compile
@@ -10,6 +10,8 @@ $ checkstyle-algs4 *.java
 // Run
 $ java-algs4 HelloWorld
 ```
+
+# Part I
 
 ## Assignment 1: percolation
 
@@ -35,3 +37,10 @@ $ java-algs4 HelloWorld
 
 - [Specification](http://coursera.cs.princeton.edu/algs4/assignments/kdtree.html)
 - [Checklist](http://coursera.cs.princeton.edu/algs4/checklists/kdtree.html)
+
+# Part II
+
+## Assignment 6: WordNet
+
+- [Specification](http://coursera.cs.princeton.edu/algs4/assignments/wordnet.html)
+- [Checklist](http://coursera.cs.princeton.edu/algs4/checklists/wordnet.html)
