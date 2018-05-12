@@ -1,7 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 WordNet.java
  *  Execution:    java-algs4 WordNet
- *  Dependencies:
+ *  Dependencies: SAP.java
  *
  *  Digraph: https://algs4.cs.princeton.edu/42digraph/Digraph.java.html
  *  DirectedCycle: https://algs4.cs.princeton.edu/42digraph/DirectedCycle.java.html
@@ -23,6 +23,7 @@ public class WordNet {
     private final SeparateChainingHashST<Integer, Bag<String>> idHST;
     private final SeparateChainingHashST<String, Bag<Integer>> wordHST;
     private Digraph G;
+    private SAP sap;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
@@ -38,6 +39,7 @@ public class WordNet {
         checkRooted(G);
         checkCycle(G);
 
+        sap = new SAP(G);
         // StdOut.println("Vertices: " + G.V());
         // StdOut.println("Edges: " + G.E());
     }
@@ -53,35 +55,54 @@ public class WordNet {
         return wordHST.contains(word);
     }
 
-    // distance between nounA and nounB (defined below)
+    // distance between nounA and nounB
+    // the minimum length of any ancestral path between any synset v of A and any synset w of B.
     public int distance(String nounA, String nounB) {
-        validateString(nounA);
-        validateString(nounB);
+        validateNouns(nounA, nounB);
 
-        return 0;
+        Iterable<Integer> A = wordHST.get(nounA);
+        Iterable<Integer> B = wordHST.get(nounB);
+
+        return sap.length(A, B);
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
     // in a shortest ancestral path (defined below)
     public String sap(String nounA, String nounB) {
-        validateString(nounA);
-        validateString(nounB);
+        validateNouns(nounA, nounB);
 
-        return "";
+        Iterable<Integer> A = wordHST.get(nounA);
+        Iterable<Integer> B = wordHST.get(nounB);
+
+        Bag<String> bag = idHST.get(sap.ancestor(A, B));
+
+        String synset = "";
+        for (String noun: bag) {
+            synset += noun;
+        }
+
+        return synset;
     }
 
-    // Corner cases: throw IllegalArgumentException if string is null
+    // Corner case: throw IllegalArgumentException if string is null
     private void validateString(String word) {
         if (word == null) throw new IllegalArgumentException("Argument can't be null.");
     }
 
-    // Corner cases: throw IllegalArgumentException if digraph is not DAG
+    // Corner case: both of the noun arguments should be  WordNet nouns.
+    private void validateNouns(String nounA, String nounB) {
+        validateString(nounA);
+        validateString(nounB);
+        if (!isNoun(nounA) || !isNoun(nounB)) throw new IllegalArgumentException("Both input nouns should be WordNet nouns.");
+    }
+
+    // Corner case: throw IllegalArgumentException if digraph is not DAG
     private void checkCycle(Digraph digraph) {
         DirectedCycle directedCycle = new DirectedCycle(digraph);
         if (directedCycle.hasCycle()) throw new IllegalArgumentException("The input does not correspond to a rooted DAG, it has cycle.");
     }
 
-    // Corner cases: throw IllegalArgumentException if digraph is not rooted
+    // Corner case: throw IllegalArgumentException if digraph is not rooted
     private void checkRooted(Digraph digraph) {
         for (int i = 0; i < digraph.V(); i++) {
             if (digraph.outdegree(i) == 0 && digraph.indegree(i) > 0) return;
@@ -127,6 +148,10 @@ public class WordNet {
         //     StdOut.println(noun);
         // }
 
-        StdOut.println(String.valueOf(wordnet.isNoun("a")));
+        // StdOut.println(String.valueOf(wordnet.isNoun(args[2])));
+
+        StdOut.println("Distance of white_marlin and mileage: " + wordnet.distance("white_marlin", "mileage"));
+        StdOut.println("Distance of Black_Plague and black_marlin: " + wordnet.distance("Black_Plague", "black_marlin"));
+        StdOut.println("Shortest ancestral path of individual and edible_fruit: " + wordnet.sap("individual", "edible_fruit"));
     }
 }
