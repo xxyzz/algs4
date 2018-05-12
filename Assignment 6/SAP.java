@@ -4,6 +4,8 @@
  *                3 11
  *  Dependencies:
  *
+ *  Digraph: https://algs4.cs.princeton.edu/42digraph/Digraph.java.html
+ *  BreadthFirstDirectedPaths: https://algs4.cs.princeton.edu/42digraph/BreadthFirstDirectedPaths.java.html
  *
  ******************************************************************************/
 
@@ -78,7 +80,10 @@ public class SAP {
                 }
             }
         }
-        if (getLength) return minLength != Integer.MAX_VALUE ? minLength : -1;
+        if (getLength) {
+            if (minLength != Integer.MAX_VALUE) return minLength;
+            return -1;
+        }
         return ancestor;
     }
 
