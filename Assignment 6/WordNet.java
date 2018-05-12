@@ -3,6 +3,7 @@
  *  Execution:    java-algs4 WordNet
  *  Dependencies:
  *
+ *  Digraph: https://algs4.cs.princeton.edu/42digraph/Digraph.java.html
  *  DirectedCycle: https://algs4.cs.princeton.edu/42digraph/DirectedCycle.java.html
  *  SeparateChainingHashST: https://algs4.cs.princeton.edu/34hash/SeparateChainingHashST.java.html
  *  Bag: https://algs4.cs.princeton.edu/13stacks/Bag.java.html
@@ -12,9 +13,11 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.SeparateChainingHashST;
 import edu.princeton.cs.algs4.Bag;
+import java.util.Arrays;
 
 public class WordNet {
     private final SeparateChainingHashST<Integer, Bag<String>> idHST;
@@ -25,14 +28,23 @@ public class WordNet {
     public WordNet(String synsets, String hypernyms) {
         validateString(synsets);
         validateString(hypernyms);
-        Digraph G = new Digraph();
+
+        idHST = new SeparateChainingHashST<>();
+        wordHST = new SeparateChainingHashST<>();
+
+        readSynsets(synsets);
+        readHypernyms(hypernyms);
+
         checkRooted(G);
         checkCycle(G);
+
+        // StdOut.println("Vertices: " + G.V());
+        // StdOut.println("Edges: " + G.E());
     }
 
     // returns all WordNet nouns
     public Iterable<String> nouns() {
-
+        return wordHST.keys();
     }
 
     // is the word a WordNet noun?
@@ -45,6 +57,8 @@ public class WordNet {
     public int distance(String nounA, String nounB) {
         validateString(nounA);
         validateString(nounB);
+
+        return 0;
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -52,17 +66,19 @@ public class WordNet {
     public String sap(String nounA, String nounB) {
         validateString(nounA);
         validateString(nounB);
+
+        return "";
     }
 
     // Corner cases: throw IllegalArgumentException if string is null
-    private void validateString(string word) {
-        if (word == null) throw IllegalArgumentException("Argument can't be null.");
+    private void validateString(String word) {
+        if (word == null) throw new IllegalArgumentException("Argument can't be null.");
     }
 
     // Corner cases: throw IllegalArgumentException if digraph is not DAG
     private void checkCycle(Digraph digraph) {
         DirectedCycle directedCycle = new DirectedCycle(digraph);
-        if (directedCycle.hasCycle()) throw new IllegalArgumentException("The input does not correspond to a rooted DAG");
+        if (directedCycle.hasCycle()) throw new IllegalArgumentException("The input does not correspond to a rooted DAG, it has cycle.");
     }
 
     // Corner cases: throw IllegalArgumentException if digraph is not rooted
@@ -70,26 +86,47 @@ public class WordNet {
         for (int i = 0; i < digraph.V(); i++) {
             if (digraph.outdegree(i) == 0 && digraph.indegree(i) > 0) return;
         }
-        throw new IllegalArgumentException("The input does not correspond to a rooted DAG");
+        throw new IllegalArgumentException("The input does not correspond to a rooted DAG, it doesn't rooted.");
     }
 
-    private void readSynsets(string synsets) {
+    private void readSynsets(String synsets) {
         In in = new In(synsets);
+        int id = 0;
         while (!in.isEmpty()) {
             String[] line = in.readLine().split(",");
+            id = Integer.parseInt(line[0]);
             Bag<String> nounsBag = new Bag<>();
             for (String noun : line[1].split(" ")) {
                 nounsBag.add(noun);
                 Bag<Integer> idsBag = new Bag<>();
                 if (wordHST.contains(noun)) idsBag = wordHST.get(noun);
-                idsBag.add(Integer.parseInt(line[0]));
+                idsBag.add(id);
                 wordHST.put(noun, idsBag);
             }
-            idHST.put(Integer.parseInt(line[0]), nounsBag);
+            idHST.put(id, nounsBag);
         }
-        
+        G = new Digraph(id + 1);
+    }
+
+    private void readHypernyms(String hypernyms) {
+        In in = new In(hypernyms);
+        while (!in.isEmpty()) {
+            String[] line = in.readLine().split(",");
+            for (String hypernymId : Arrays.copyOfRange(line, 1, line.length)) {
+                G.addEdge(Integer.parseInt(line[0]), Integer.parseInt(hypernymId));
+            }
+        }
     }
 
     // do unit testing of this class
-    public static void main(String[] args) { }
+    public static void main(String[] args) {
+        WordNet wordnet = new WordNet(args[0], args[1]);
+
+        // StdOut.println("All wordnet nouns:");
+        // for (String noun : wordnet.nouns()) {
+        //     StdOut.println(noun);
+        // }
+
+        StdOut.println(String.valueOf(wordnet.isNoun("a")));
+    }
 }
