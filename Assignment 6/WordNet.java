@@ -1,6 +1,6 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 WordNet.java
- *  Execution:    java-algs4 WordNet
+ *  Execution:    java-algs4 WordNet wordnet/synsets.txt wordnet/hypernyms.txt
  *  Dependencies: SAP.java
  *
  *  Digraph: https://algs4.cs.princeton.edu/42digraph/Digraph.java.html
@@ -12,7 +12,7 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.StdIn;
+// import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.SeparateChainingHashST;
@@ -23,7 +23,7 @@ public class WordNet {
     private final SeparateChainingHashST<Integer, Bag<String>> idHST;
     private final SeparateChainingHashST<String, Bag<Integer>> wordHST;
     private Digraph G;
-    private SAP sap;
+    private final SAP sap;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
@@ -60,10 +60,10 @@ public class WordNet {
     public int distance(String nounA, String nounB) {
         validateNouns(nounA, nounB);
 
-        Iterable<Integer> A = wordHST.get(nounA);
-        Iterable<Integer> B = wordHST.get(nounB);
+        Iterable<Integer> a = wordHST.get(nounA);
+        Iterable<Integer> b = wordHST.get(nounB);
 
-        return sap.length(A, B);
+        return sap.length(a, b);
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -71,17 +71,18 @@ public class WordNet {
     public String sap(String nounA, String nounB) {
         validateNouns(nounA, nounB);
 
-        Iterable<Integer> A = wordHST.get(nounA);
-        Iterable<Integer> B = wordHST.get(nounB);
+        Iterable<Integer> a = wordHST.get(nounA);
+        Iterable<Integer> b = wordHST.get(nounB);
 
-        Bag<String> bag = idHST.get(sap.ancestor(A, B));
+        Bag<String> bag = idHST.get(sap.ancestor(a, b));
 
-        String synset = "";
+        // use StringBuilder in loop
+        StringBuilder synset = new StringBuilder();
         for (String noun: bag) {
-            synset += noun;
+            synset.append(noun);
         }
 
-        return synset;
+        return synset.toString();
     }
 
     // Corner case: throw IllegalArgumentException if string is null
@@ -152,6 +153,8 @@ public class WordNet {
 
         StdOut.println("Distance of white_marlin and mileage: " + wordnet.distance("white_marlin", "mileage"));
         StdOut.println("Distance of Black_Plague and black_marlin: " + wordnet.distance("Black_Plague", "black_marlin"));
+        StdOut.println("Distance of American_water_spaniel and histology: " + wordnet.distance("American_water_spaniel", "histology"));
+        StdOut.println("Distance of Brown_Swiss and barrel_roll: " + wordnet.distance("Brown_Swiss", "barrel_roll"));
         StdOut.println("Shortest ancestral path of individual and edible_fruit: " + wordnet.sap("individual", "edible_fruit"));
     }
 }
