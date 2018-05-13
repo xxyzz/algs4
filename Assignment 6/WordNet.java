@@ -76,13 +76,13 @@ public class WordNet {
 
         Bag<String> bag = idHST.get(sap.ancestor(a, b));
 
-        // use StringBuilder in loop
+        // Don't use '+' to build String in a loop
         StringBuilder synset = new StringBuilder();
         for (String noun: bag) {
-            synset.append(noun);
+            synset.append(noun + " ");
         }
 
-        return synset.toString();
+        return synset.toString().substring(0, synset.length() - 1);
     }
 
     // Corner case: throw IllegalArgumentException if string is null
@@ -105,10 +105,14 @@ public class WordNet {
 
     // Corner case: throw IllegalArgumentException if digraph is not rooted
     private void checkRooted(Digraph digraph) {
+        int root = 0;
         for (int i = 0; i < digraph.V(); i++) {
-            if (digraph.outdegree(i) == 0 && digraph.indegree(i) > 0) return;
+            if (digraph.outdegree(i) == 0 && digraph.indegree(i) > 0) root++;
         }
-        throw new IllegalArgumentException("The input does not correspond to a rooted DAG, it doesn't rooted.");
+        // Only one root
+        if (root == 0 || root > 1) {
+            throw new IllegalArgumentException("The input does not correspond to a rooted DAG");
+        }
     }
 
     private void readSynsets(String synsets) {
@@ -149,12 +153,12 @@ public class WordNet {
         //     StdOut.println(noun);
         // }
 
-        // StdOut.println(String.valueOf(wordnet.isNoun(args[2])));
+        StdOut.println(String.valueOf(wordnet.isNoun(args[2])));
 
-        StdOut.println("Distance of white_marlin and mileage: " + wordnet.distance("white_marlin", "mileage"));
-        StdOut.println("Distance of Black_Plague and black_marlin: " + wordnet.distance("Black_Plague", "black_marlin"));
-        StdOut.println("Distance of American_water_spaniel and histology: " + wordnet.distance("American_water_spaniel", "histology"));
-        StdOut.println("Distance of Brown_Swiss and barrel_roll: " + wordnet.distance("Brown_Swiss", "barrel_roll"));
-        StdOut.println("Shortest ancestral path of individual and edible_fruit: " + wordnet.sap("individual", "edible_fruit"));
+        // StdOut.println("Distance of white_marlin and mileage: " + wordnet.distance("white_marlin", "mileage"));
+        // StdOut.println("Distance of Black_Plague and black_marlin: " + wordnet.distance("Black_Plague", "black_marlin"));
+        // StdOut.println("Distance of American_water_spaniel and histology: " + wordnet.distance("American_water_spaniel", "histology"));
+        // StdOut.println("Distance of Brown_Swiss and barrel_roll: " + wordnet.distance("Brown_Swiss", "barrel_roll"));
+        // StdOut.println("Shortest ancestral path of silvex and raciness: " + wordnet.sap("silvex", "raciness"));
     }
 }

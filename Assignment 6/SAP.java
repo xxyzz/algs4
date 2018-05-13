@@ -21,7 +21,8 @@ public class SAP {
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         if (G == null) throw new IllegalArgumentException("Digraph G can't be null.");
-        digraph = G;
+        // immutable SAP, Digraph is mutable. Using Digraph's constructor to create deep copy digraph.
+        digraph = new Digraph(G);
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
@@ -89,8 +90,8 @@ public class SAP {
 
     // Corner cases
     private void validateVertex(int v) {
-        int V = digraph.V();
-        if (v < 0 || v >= V) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+        int digraphV = digraph.V();
+        if (v < 0 || v >= digraphV) throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (digraphV - 1));
     }
 
     // Corner cases
@@ -98,10 +99,10 @@ public class SAP {
         if (vertices == null) {
             throw new IllegalArgumentException("argument is null");
         }
-        int V = digraph.V();
+        int digraphV = digraph.V();
         for (int v : vertices) {
-            if (v < 0 || v >= V) {
-                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+            if (v < 0 || v >= digraphV) {
+                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (digraphV - 1));
             }
         }
     }
