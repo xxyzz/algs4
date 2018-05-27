@@ -50,23 +50,23 @@ public class SeamCarver {
     }
 
     private double xGradientSquare(int x, int y) {
-        int leftPixelColor = picture.getRGB(x - 1, y);
-        int rightPixelColor = picture.getRGB(x + 1, y);
-        int rx = leftPixelColor / 1000000 - rightPixelColor / 1000000;
-        int gx = leftPixelColor / 1000 % 1000 - rightPixelColor / 1000 % 1000;
-        int bx = leftPixelColor % 1000 - rightPixelColor % 1000;
-
-        return Math.pow(rx, 2) + Math.pow(gx, 2) + Math.pow(bx, 2);
+        int leftRGB = picture.getRGB(x - 1, y);
+        int rightRGB = picture.getRGB(x + 1, y);
+        return sumSquare(leftRGB, rightRGB);
     }
 
     private double yGradientSquare(int x, int y) {
-        int upPixelColor = picture.getRGB(x, y - 1);
-        int downPixelColor = picture.getRGB(x, y + 1);
-        int ry = upPixelColor / 1000000 - downPixelColor / 1000000;
-        int gy = upPixelColor / 1000 % 1000 - downPixelColor / 1000 % 1000;
-        int by = upPixelColor % 1000 - downPixelColor % 1000;
+        int upRGB = picture.getRGB(x, y - 1);
+        int downRGB = picture.getRGB(x, y + 1);
+        return sumSquare(upRGB, downRGB);
+    }
 
-        return Math.pow(ry, 2) + Math.pow(gy, 2) + Math.pow(by, 2);
+    private double sumSquare(int rgbA, int rgbB) {
+        int r = ((rgbA >> 16) & 0xFF) - ((rgbB >> 16) & 0xFF);
+        int g = ((rgbA >> 8) & 0xFF) - ((rgbB >> 8) & 0xFF);
+        int b = (rgbA & 0xFF) - (rgbB & 0xFF);
+
+        return Math.pow(r, 2) + Math.pow(g, 2) + Math.pow(b, 2);
     }
 
     // sequence of indices for horizontal seam
