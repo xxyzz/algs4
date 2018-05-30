@@ -3,10 +3,12 @@
  *  Execution:    java-algs4 SeamCarver
  *  Dependencies:
  *
+ * Picture: https://algs4.cs.princeton.edu/code/javadoc/edu/princeton/cs/algs4/Picture.html
  *
  ******************************************************************************/
 
 import edu.princeton.cs.algs4.Picture;
+// import edu.princeton.cs.algs4.StdOut;
 
 public class SeamCarver {
     private final int width;
@@ -75,9 +77,54 @@ public class SeamCarver {
     // }
 
     // sequence of indices for vertical seam
-    // public int[] findVerticalSeam() {
-        
-    // }
+    public int[] findVerticalSeam() {
+        double[][] energy = new double[width][height];
+        double[][] energyTo = new double[width][height];
+        int[][] edgeTo = new int[width][height];
+        double minEnergy = Double.POSITIVE_INFINITY;
+        int[] sp = new int[height];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i == 0) {
+                    energyTo[j][i] = 0;
+                }
+                else {
+                    energy[j][i] = energy(j, i);
+                    energyTo[j][i] = Double.POSITIVE_INFINITY;
+                }
+            }
+        }
+
+        for (int i = 0; i < height - 1; i++) {
+            for (int j = 0; j < width; j++) {
+                for (int k = -1; k < 2; k++) {
+                    if (j + k < 0 || j + k > width - 1) {
+                        continue;
+                    }
+                    else if (energyTo[j + k][i + 1] > energyTo[j][i] + energy[j + k][i + 1]) {
+                        energyTo[j + k][i + 1] = energyTo[j][i] + energy[j + k][i + 1];
+                        edgeTo[j + k][i + 1] = j;
+                    }
+                }
+            }
+        }
+
+        for (int j = 0; j < width; j++) {
+            if (energyTo[j][height - 1] < minEnergy) {
+                minEnergy = energyTo[j][height - 1];
+                int y = height - 1;
+                int x = j;
+                while (y > -1) {
+                    sp[y] = x;
+                    x = edgeTo[x][y];
+                    y--;
+                }
+            }
+        }
+
+        return sp;
+    }
 
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam) {
