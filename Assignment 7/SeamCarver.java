@@ -8,13 +8,12 @@
  ******************************************************************************/
 
 import edu.princeton.cs.algs4.Picture;
-// import edu.princeton.cs.algs4.StdOut;
-
 
 public class SeamCarver {
     private int width;
     private int height;
     private Picture picture;
+    private double[][] energy;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -104,7 +103,7 @@ public class SeamCarver {
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        double[][] energy = new double[width][height];
+        energy = new double[width][height];
         double[][] energyTo = new double[width][height];
         int[][] edgeTo = new int[width][height];
         double minEnergy = Double.POSITIVE_INFINITY;
@@ -116,7 +115,7 @@ public class SeamCarver {
                     energyTo[j][i] = 0;
                 }
                 else {
-                    energy[j][i] = energy(j, i);
+                    if (energy[j][i] == 0) energy[j][i] = energy(j, i);
                     energyTo[j][i] = Double.POSITIVE_INFINITY;
                 }
             }
@@ -158,6 +157,10 @@ public class SeamCarver {
         if (height <= 1) throw new IllegalArgumentException("The height of the picture is <= 1");
         if (seam.length != width) throw new IllegalArgumentException("Wrong array length");
         checkSeamValid(seam);
+
+        transpose(true);
+        removeVerticalSeam(seam);
+        transpose(false);
     }
 
     // remove vertical seam from current picture
@@ -166,6 +169,21 @@ public class SeamCarver {
         if (width <= 1) throw new IllegalArgumentException("The width of the picture is <= 1");
         if (seam.length != height) throw new IllegalArgumentException("Wrong array length");
         checkSeamValid(seam);
+
+        Picture rmPicture = new Picture(width - 1, height);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (j < seam[i]) rmPicture.setRGB(j, i, picture.getRGB(j, i));
+                else if (j > seam[i]) rmPicture.setRGB(j - 1, i, picture.getRGB(j, i));
+            }
+        }
+        width--;
+        picture = rmPicture;
+
+        for (int i = 1; i < height; i++) {
+            if (seam[i] > 0) energy[seam[i] - 1][i] = energy(seam[i] - 1, i);
+            if (seam[i] < width) energy[seam[i]][i] = energy(seam[i], i);
+        }
     }
 
     /* corner cases:
@@ -175,7 +193,7 @@ public class SeamCarver {
     private void checkSeamValid(int[] seam) {
         if (seam == null) throw new IllegalArgumentException("Argument is null");
         for (int i = 0; i < seam.length - 1; i++) {
-            if (Math.abs(seam[i] - seam[i + 1]) != 1) throw new IllegalArgumentException("The array is not a valid seam");
+            if (Math.abs(seam[i] - seam[i + 1]) > 1) throw new IllegalArgumentException("The array is not a valid seam");
         }
     }
 }
