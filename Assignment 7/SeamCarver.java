@@ -10,10 +10,11 @@
 import edu.princeton.cs.algs4.Picture;
 // import edu.princeton.cs.algs4.StdOut;
 
+
 public class SeamCarver {
-    private final int width;
-    private final int height;
-    private final Picture picture;
+    private int width;
+    private int height;
+    private Picture picture;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -27,7 +28,7 @@ public class SeamCarver {
 
     // current picture
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
 
     // width of current picture
@@ -72,9 +73,34 @@ public class SeamCarver {
     }
 
     // sequence of indices for horizontal seam
-    // public int[] findHorizontalSeam() {
-        
-    // }
+    public int[] findHorizontalSeam() {
+        transpose(true);
+        int[] sp = findVerticalSeam();
+        transpose(false);
+
+        // reverse sp
+        for (int i = 0; i < width / 2; i++) {
+            int temp = sp[i];
+            sp[i] = sp[width - i - 1];
+            sp[width - i - 1] = temp;
+        }
+
+        return sp;
+    }
+
+    // HORIZONTAL: true, VERTICAL: false
+    private void transpose(boolean direction) {
+        height = picture.width();
+        width = picture.height();
+        Picture tsPicture = new Picture(width, height);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (direction) tsPicture.setRGB(j, i, picture.getRGB(height - i - 1, j));
+                else tsPicture.setRGB(j, i, picture.getRGB(i, width - j - 1));
+            }
+        }
+        picture = tsPicture;
+    }
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
