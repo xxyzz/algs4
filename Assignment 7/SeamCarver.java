@@ -13,7 +13,6 @@ public class SeamCarver {
     private int width;
     private int height;
     private Picture picture;
-    private double[][] energy;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -76,15 +75,20 @@ public class SeamCarver {
         transpose(true);
         int[] sp = findVerticalSeam();
         transpose(false);
-
-        // reverse sp
-        for (int i = 0; i < width / 2; i++) {
-            int temp = sp[i];
-            sp[i] = sp[width - i - 1];
-            sp[width - i - 1] = temp;
-        }
+        sp = reverseArray(sp);
 
         return sp;
+    }
+
+    private int[] reverseArray(int[] array) {
+        int arrayLength = array.length;
+        for (int i = 0; i < arrayLength / 2; i++) {
+            int temp = array[i];
+            array[i] = array[arrayLength - i - 1];
+            array[arrayLength - i - 1] = temp;
+        }
+
+        return array;
     }
 
     // HORIZONTAL: true, VERTICAL: false
@@ -103,7 +107,7 @@ public class SeamCarver {
 
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
-        energy = new double[width][height];
+        double[][] energy = new double[width][height];
         double[][] energyTo = new double[width][height];
         int[][] edgeTo = new int[width][height];
         double minEnergy = Double.POSITIVE_INFINITY;
@@ -115,7 +119,7 @@ public class SeamCarver {
                     energyTo[j][i] = 0;
                 }
                 else {
-                    if (energy[j][i] == 0) energy[j][i] = energy(j, i);
+                    energy[j][i] = energy(j, i);
                     energyTo[j][i] = Double.POSITIVE_INFINITY;
                 }
             }
@@ -155,10 +159,11 @@ public class SeamCarver {
     public void removeHorizontalSeam(int[] seam) {
         // corner cases
         if (height <= 1) throw new IllegalArgumentException("The height of the picture is <= 1");
-        if (seam.length != width) throw new IllegalArgumentException("Wrong array length");
         checkSeamValid(seam);
+        if (seam.length != width) throw new IllegalArgumentException("Wrong array length");
 
         transpose(true);
+        seam = reverseArray(seam);
         removeVerticalSeam(seam);
         transpose(false);
     }
@@ -167,8 +172,8 @@ public class SeamCarver {
     public void removeVerticalSeam(int[] seam) {
         // corner cases
         if (width <= 1) throw new IllegalArgumentException("The width of the picture is <= 1");
-        if (seam.length != height) throw new IllegalArgumentException("Wrong array length");
         checkSeamValid(seam);
+        if (seam.length != height) throw new IllegalArgumentException("Wrong array length");
 
         Picture rmPicture = new Picture(width - 1, height);
         for (int i = 0; i < height; i++) {
@@ -180,10 +185,10 @@ public class SeamCarver {
         width--;
         picture = rmPicture;
 
-        for (int i = 1; i < height; i++) {
-            if (seam[i] > 0) energy[seam[i] - 1][i] = energy(seam[i] - 1, i);
-            if (seam[i] < width) energy[seam[i]][i] = energy(seam[i], i);
-        }
+        // for (int i = 1; i < height; i++) {
+        //     if (seam[i] > 0) energy[seam[i] - 1][i] = energy(seam[i] - 1, i);
+        //     if (seam[i] < width) energy[seam[i]][i] = energy(seam[i], i);
+        // }
     }
 
     /* corner cases:
