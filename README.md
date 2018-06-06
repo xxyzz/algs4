@@ -49,3 +49,8 @@ $ java-algs4 HelloWorld
 
 - [Specification](http://coursera.cs.princeton.edu/algs4/assignments/seam.html)
 - [Checklist](http://coursera.cs.princeton.edu/algs4/checklists/seam.html)
+
+## Assignment 8: Baseball Elimination
+
+- [Specification](http://coursera.cs.princeton.edu/algs4/assignments/baseball.html)
+- [Checklist](http://coursera.cs.princeton.edu/algs4/checklists/baseball.html)
