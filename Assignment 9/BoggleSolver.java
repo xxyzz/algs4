@@ -42,7 +42,9 @@ public class BoggleSolver {
     private void dfs(BoggleBoard board, int row, int col, boolean[][] marked, String word) {
         if (marked[row][col]) return;
 
-        word += board.getLetter(row, col);
+        char letter = board.getLetter(row, col);
+        if (letter == 'Q') word += "QU";
+        else word += letter;
 
         if (!dicTst.hasKeysWithPrefix(word)) return;
 
