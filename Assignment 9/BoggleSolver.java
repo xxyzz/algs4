@@ -12,7 +12,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SET;
 
 public class BoggleSolver {
-    private MyTST<Integer> dicTst;
+    private final MyTST<Integer> dicTst;
     private SET<String> wordSt;
 
     // Initializes the data structure using the given array of strings as the dictionary.
@@ -75,6 +75,7 @@ public class BoggleSolver {
     public int scoreOf(String word) {
         if (word == null) throw new IllegalArgumentException("Argument is null");
         int wordLength = word.length();
+        if (wordLength < 3) return 0;
         if (dicTst.contains(word)) {
             if (wordLength >= 8) return 11;
             else if (wordLength == 7) return 5;
