@@ -32,23 +32,18 @@ public class BoggleSolver {
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         if (board == null) throw new IllegalArgumentException("Argument is null");
         wordST = new SET<String>();
-        rows = board.rows();
-        cols = board.cols();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                boolean[] marked = new boolean[rows * cols];
-                dfs(board, i, j, marked, "");
-            }
+        MyGraph boardGraph = new MyGraph(board);
+        for (MyGraph.Node node : boardGraph.nodes) {
+            dfs(node, "");
         }
         return wordST;
     }
 
     // depth-first search
-    private void dfs(BoggleBoard board, int row, int col, boolean[] marked, String word) {
-        int index = row * cols + col;
-        if (marked[index]) return;
+    private void dfs(MyGraph.Node node, String word) {
+        if (node.marked) return;
 
-        char letter = board.getLetter(row, col);
+        char letter = node.letter;
         if (letter == 'Q') word += "QU";
         else word += letter;
 
@@ -56,24 +51,15 @@ public class BoggleSolver {
 
         if (word.length() > 2 && dicST.contains(word) && !wordST.contains(word)) wordST.add(word);
 
-        // mark as visited only after dictionary has words with this prefix
-        marked[index] = true;
+         // mark as visited only after dictionary has words with this prefix
+        node.marked = true;
 
-        // search adjacent dices
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-
-                if ((row + i >= 0) && (row + i < rows) && (col + j >= 0) && (col + j < cols)) {
-                    dfs(board, row + i, col + j, marked, word);
-                }
-            }
+        for (MyGraph.Node adjNode: node.adjacentNodes) {
+            dfs(adjNode, word);
         }
 
         // change to not visited for another path
-        marked[index] = false;
+        node.marked = false;
     }
 
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
@@ -96,7 +82,7 @@ public class BoggleSolver {
     public static void main(String[] args) {
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
-        BoggleBoard board = new BoggleBoard();
+        BoggleBoard board = new BoggleBoard(args[1]);
         BoggleSolver solver = new BoggleSolver(dictionary);
         int score = 0, count = 0;
         Stopwatch stopwatch = new Stopwatch();
