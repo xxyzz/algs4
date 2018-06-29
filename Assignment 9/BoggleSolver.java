@@ -14,7 +14,7 @@ import edu.princeton.cs.algs4.Stopwatch;
 
 public class BoggleSolver {
     private final MyTrieST<Integer> dicST;
-    private SET<String> wordSET;
+    private SET<String> wordST;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -29,14 +29,14 @@ public class BoggleSolver {
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         if (board == null) throw new IllegalArgumentException("Argument is null");
-        wordSET = new SET<String>();
+        wordST = new SET<String>();
         for (int i = 0; i < board.rows(); i++) {
             for (int j = 0; j < board.cols(); j++) {
                 boolean[] marked = new boolean[board.rows() * board.cols()];
                 dfs(board, i, j, marked, "");
             }
         }
-        return wordSET;
+        return wordST;
     }
 
     // depth-first search
@@ -50,7 +50,7 @@ public class BoggleSolver {
 
         if (!dicST.hasKeysWithPrefix(word)) return;
 
-        if (word.length() > 2 && dicST.contains(word) && !wordSET.contains(word)) wordSET.add(word);
+        if (word.length() > 2 && dicST.contains(word) && !wordST.contains(word)) wordST.add(word);
 
         // mark as visited only after dictionary has words with this prefix
         marked[index] = true;
@@ -90,16 +90,14 @@ public class BoggleSolver {
 
     // test
     public static void main(String[] args) {
-        Stopwatch stopwatch1 = new Stopwatch();
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
-        BoggleBoard board = new BoggleBoard();
-        StdOut.println("Time for board: " + Double.toString(stopwatch1.elapsedTime()));
-        Stopwatch stopwatch2 = new Stopwatch();
+        BoggleBoard board = new BoggleBoard(args[1]);
+        Stopwatch stopwatch = new Stopwatch();
         BoggleSolver solver = new BoggleSolver(dictionary);
         int score = 0;
         Iterable<String> words = solver.getAllValidWords(board);
-        StdOut.println("Time for solver: " + Double.toString(stopwatch2.elapsedTime()));
+        StdOut.println("Time for solver: " + Double.toString(stopwatch.elapsedTime()));
         for (String word : words) {
             StdOut.println(word);
             score += solver.scoreOf(word);

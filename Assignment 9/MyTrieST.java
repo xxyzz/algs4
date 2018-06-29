@@ -8,8 +8,8 @@
  *
  ******************************************************************************/
 
-import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdOut;
+// import edu.princeton.cs.algs4.Queue;
+// import edu.princeton.cs.algs4.StdOut;
 
 public class MyTrieST<Value> {
     private static final int R = 26;        // A - Z
@@ -38,9 +38,9 @@ public class MyTrieST<Value> {
      *     and {@code null} if the key is not in the symbol table
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
-    public Value get(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to get() is null");
-        Node x = get(root, key, 0);
+    private Value nonrecursiveGet(String key) {
+        if (root == null) return null;
+        Node x = nonrecursiveGet(root, key);
         if (x == null) return null;
         return (Value) x.val;
     }
@@ -54,14 +54,15 @@ public class MyTrieST<Value> {
      */
     public boolean contains(String key) {
         if (key == null) throw new IllegalArgumentException("argument to contains() is null");
-        return get(key) != null;
+        return nonrecursiveGet(key) != null;
     }
 
-    private Node get(Node x, String key, int d) {
-        if (x == null) return null;
-        if (d == key.length()) return x;
-        char c = key.charAt(d);
-        return get(x.next[c - 'A'], key, d+1);
+    private Node nonrecursiveGet(Node x, String key) {
+        for (int i = 0; i < key.length(); i++) {
+            x = x.next[key.charAt(i) - 'A'];
+            if (x == null) return null;
+        }
+        return x;
     }
 
     /**
@@ -94,12 +95,12 @@ public class MyTrieST<Value> {
         Node x;
         int prefixL = prefix.length();
         if (prefixL > 1 && lastPrefix.equals(prefix.substring(0, prefixL - 2)) && prefix.substring(prefixL - 2).equals("QU")) {
-            x = get(lastNode, "Q", 0);
+            x = nonrecursiveGet(lastNode, "Q");
         }
         else if (prefixL > 1 && lastPrefix.equals(prefix.substring(0, prefixL - 1))) {
-            x = get(lastNode, prefix.substring(prefixL - 1), 0);
+            x = nonrecursiveGet(lastNode, prefix.substring(prefixL - 1));
         }
-        else x = get(root, prefix, 0);
+        else x = nonrecursiveGet(root, prefix);
         if (x != null) {
             lastNode = x;
             lastPrefix = prefix;
