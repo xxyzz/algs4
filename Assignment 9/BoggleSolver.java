@@ -1,7 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 BoggleSolver.java
  *  Execution:    java-algs4 BoggleSolver dictionary-algs4.txt board4x4.txt
- *  Dependencies: In.java StdOut.java MyTST.java SET.java
+ *  Dependencies: In.java StdOut.java MyTrieST.java SET.java
  *
  *  Find all valid words in a given Boggle board, using a given dictionary.
  *
@@ -10,48 +10,50 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.Stopwatch;
 
 public class BoggleSolver {
-    private final MyTST<Integer> dicTst;
-    private SET<String> wordSt;
+    private final MyTrieST<Integer> dicST;
+    private SET<String> wordSET;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
         if (dictionary == null) throw new IllegalArgumentException("Argument is null");
-        dicTst = new MyTST<Integer>();
+        dicST = new MyTrieST<Integer>();
         for (int i = 0; i < dictionary.length; i++) {
-            dicTst.put(dictionary[i], i);
+            dicST.put(dictionary[i], i);
         }
     }
 
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         if (board == null) throw new IllegalArgumentException("Argument is null");
-        wordSt = new SET<String>();
+        wordSET = new SET<String>();
         for (int i = 0; i < board.rows(); i++) {
             for (int j = 0; j < board.cols(); j++) {
-                boolean[][] marked = new boolean[board.rows()][board.cols()];
+                boolean[] marked = new boolean[board.rows() * board.cols()];
                 dfs(board, i, j, marked, "");
             }
         }
-        return wordSt;
+        return wordSET;
     }
 
     // depth-first search
-    private void dfs(BoggleBoard board, int row, int col, boolean[][] marked, String word) {
-        if (marked[row][col]) return;
+    private void dfs(BoggleBoard board, int row, int col, boolean[] marked, String word) {
+        int index = row * board.cols() + col;
+        if (marked[index]) return;
 
         char letter = board.getLetter(row, col);
         if (letter == 'Q') word += "QU";
         else word += letter;
 
-        if (!dicTst.hasKeysWithPrefix(word)) return;
+        if (!dicST.hasKeysWithPrefix(word)) return;
 
-        if (word.length() > 2 && dicTst.contains(word) && !wordSt.contains(word)) wordSt.add(word);
+        if (word.length() > 2 && dicST.contains(word) && !wordSET.contains(word)) wordSET.add(word);
 
         // mark as visited only after dictionary has words with this prefix
-        marked[row][col] = true;
+        marked[index] = true;
 
         // search adjacent dices
         for (int i = -1; i <= 1; i++) {
@@ -67,7 +69,7 @@ public class BoggleSolver {
         }
 
         // change to not visited for another path
-        marked[row][col] = false;
+        marked[index] = false;
     }
 
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
@@ -76,7 +78,7 @@ public class BoggleSolver {
         if (word == null) throw new IllegalArgumentException("Argument is null");
         int wordLength = word.length();
         if (wordLength < 3) return 0;
-        if (dicTst.contains(word)) {
+        if (dicST.contains(word)) {
             if (wordLength >= 8) return 11;
             else if (wordLength == 7) return 5;
             else if (wordLength == 6) return 3;
@@ -88,12 +90,17 @@ public class BoggleSolver {
 
     // test
     public static void main(String[] args) {
+        Stopwatch stopwatch1 = new Stopwatch();
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
+        BoggleBoard board = new BoggleBoard();
+        StdOut.println("Time for board: " + Double.toString(stopwatch1.elapsedTime()));
+        Stopwatch stopwatch2 = new Stopwatch();
         BoggleSolver solver = new BoggleSolver(dictionary);
-        BoggleBoard board = new BoggleBoard(args[1]);
         int score = 0;
-        for (String word : solver.getAllValidWords(board)) {
+        Iterable<String> words = solver.getAllValidWords(board);
+        StdOut.println("Time for solver: " + Double.toString(stopwatch2.elapsedTime()));
+        for (String word : words) {
             StdOut.println(word);
             score += solver.scoreOf(word);
         }
