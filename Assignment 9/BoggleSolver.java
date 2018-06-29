@@ -15,6 +15,8 @@ import edu.princeton.cs.algs4.Stopwatch;
 public class BoggleSolver {
     private final MyTrieST<Integer> dicST;
     private SET<String> wordST;
+    private int rows;
+    private int cols;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -30,9 +32,11 @@ public class BoggleSolver {
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         if (board == null) throw new IllegalArgumentException("Argument is null");
         wordST = new SET<String>();
-        for (int i = 0; i < board.rows(); i++) {
-            for (int j = 0; j < board.cols(); j++) {
-                boolean[] marked = new boolean[board.rows() * board.cols()];
+        rows = board.rows();
+        cols = board.cols();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                boolean[] marked = new boolean[rows * cols];
                 dfs(board, i, j, marked, "");
             }
         }
@@ -41,7 +45,7 @@ public class BoggleSolver {
 
     // depth-first search
     private void dfs(BoggleBoard board, int row, int col, boolean[] marked, String word) {
-        int index = row * board.cols() + col;
+        int index = row * cols + col;
         if (marked[index]) return;
 
         char letter = board.getLetter(row, col);
@@ -62,7 +66,7 @@ public class BoggleSolver {
                     continue;
                 }
 
-                if ((row + i >= 0) && (row + i < board.rows()) && (col + j >= 0) && (col + j < board.cols())) {
+                if ((row + i >= 0) && (row + i < rows) && (col + j >= 0) && (col + j < cols)) {
                     dfs(board, row + i, col + j, marked, word);
                 }
             }
@@ -92,16 +96,17 @@ public class BoggleSolver {
     public static void main(String[] args) {
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
-        BoggleBoard board = new BoggleBoard(args[1]);
-        Stopwatch stopwatch = new Stopwatch();
+        BoggleBoard board = new BoggleBoard();
         BoggleSolver solver = new BoggleSolver(dictionary);
-        int score = 0;
+        int score = 0, count = 0;
+        Stopwatch stopwatch = new Stopwatch();
         Iterable<String> words = solver.getAllValidWords(board);
         StdOut.println("Time for solver: " + Double.toString(stopwatch.elapsedTime()));
         for (String word : words) {
             StdOut.println(word);
             score += solver.scoreOf(word);
+            count++;
         }
-        StdOut.println("Score = " + score);
+        StdOut.println("Score = " + score + " count: " + count);
     }
 }
