@@ -94,7 +94,7 @@ public class MyTrieST<Value> {
         if (lastNode == null) lastNode = root;
         Node x;
         int prefixL = prefix.length();
-        if (prefixL > 1 && lastPrefix.equals(prefix.substring(0, prefixL - 2)) && prefix.substring(prefixL - 2).equals("QU")) {
+        if (prefixL > 1 && prefix.substring(prefixL - 2).equals("QU") && lastPrefix.equals(prefix.substring(0, prefixL - 2))) {
             x = nonrecursiveGet(lastNode, "QU");
         }
         else if (prefixL > 1 && lastPrefix.equals(prefix.substring(0, prefixL - 1))) {

@@ -11,12 +11,11 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.Stopwatch;
+import edu.princeton.cs.algs4.Bag;
 
 public class BoggleSolver {
     private final MyTrieST<Integer> dicST;
-    private SET<String> wordST;
-    private int rows;
-    private int cols;
+    private SET<String> wordSET;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -31,16 +30,16 @@ public class BoggleSolver {
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         if (board == null) throw new IllegalArgumentException("Argument is null");
-        wordST = new SET<String>();
+        wordSET = new SET<String>();
         MyGraph boardGraph = new MyGraph(board);
         for (MyGraph.Node node : boardGraph.nodes) {
-            dfs(node, "");
+            dfs(boardGraph, node, "");
         }
-        return wordST;
+        return wordSET;
     }
 
     // depth-first search
-    private void dfs(MyGraph.Node node, String word) {
+    private void dfs(MyGraph boardGraph, MyGraph.Node node, String word) {
         if (node.marked) return;
 
         char letter = node.letter;
@@ -49,13 +48,13 @@ public class BoggleSolver {
 
         if (!dicST.hasKeysWithPrefix(word)) return;
 
-        if (word.length() > 2 && dicST.contains(word) && !wordST.contains(word)) wordST.add(word);
+        if (word.length() > 2 && dicST.contains(word)) wordSET.add(word);
 
          // mark as visited only after dictionary has words with this prefix
         node.marked = true;
 
-        for (MyGraph.Node adjNode: node.adjacentNodes) {
-            dfs(adjNode, word);
+        for (int adjNodeIndex: node.adjacentNodes) {
+            dfs(boardGraph, boardGraph.nodes[adjNodeIndex], word);
         }
 
         // change to not visited for another path
@@ -78,6 +77,45 @@ public class BoggleSolver {
         return 0;
     }
 
+    private class MyGraph {
+        private final Node[] nodes;
+    
+        private class Node {
+            private char letter;
+            private Bag<Integer> adjacentNodes;
+            private boolean marked;
+        }
+    
+        public MyGraph(BoggleBoard board) {
+            int rows = board.rows();
+            int cols = board.cols();
+            nodes = new Node[rows * cols];
+    
+            // loop board
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    int index = i * cols + j;
+                    Node node = new Node();
+                    node.letter = board.getLetter(i, j);
+                    node.adjacentNodes = new Bag<Integer>();
+                    nodes[index] = node;
+                    // adjacent dices
+                    for (int n = -1; n <= 1; n++) {
+                        for (int m = -1; m <= 1; m++) {
+                            if (n == 0 && m == 0) {
+                                continue;
+                            }
+            
+                            if ((i + n >= 0) && (i + n < rows) && (j + m >= 0) && (j + m < cols)) {
+                                nodes[index].adjacentNodes.add((i + n) * cols + j + m);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // test
     public static void main(String[] args) {
         In in = new In(args[0]);
@@ -86,13 +124,12 @@ public class BoggleSolver {
         BoggleSolver solver = new BoggleSolver(dictionary);
         int score = 0, count = 0;
         Stopwatch stopwatch = new Stopwatch();
-        Iterable<String> words = solver.getAllValidWords(board);
-        StdOut.println("Time for solver: " + Double.toString(stopwatch.elapsedTime()));
-        for (String word : words) {
+        for (String word : solver.getAllValidWords(board)) {
             StdOut.println(word);
             score += solver.scoreOf(word);
             count++;
         }
         StdOut.println("Score = " + score + " count: " + count);
+        StdOut.println("Time for solver: " + Double.toString(stopwatch.elapsedTime()));
     }
 }
