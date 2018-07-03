@@ -11,7 +11,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.Stopwatch;
-import edu.princeton.cs.algs4.Bag;
+import java.util.ArrayList;
 
 public class BoggleSolver {
     private final MyTrieST<Integer> dicST;
@@ -33,13 +33,13 @@ public class BoggleSolver {
         wordSET = new SET<String>();
         MyGraph boardGraph = new MyGraph(board);
         for (MyGraph.Node node : boardGraph.nodes) {
-            dfs(boardGraph, node, "");
+            dfs(node, "");
         }
         return wordSET;
     }
 
     // depth-first search
-    private void dfs(MyGraph boardGraph, MyGraph.Node node, String word) {
+    private void dfs(MyGraph.Node node, String word) {
         if (node.marked) return;
 
         char letter = node.letter;
@@ -53,8 +53,8 @@ public class BoggleSolver {
          // mark as visited only after dictionary has words with this prefix
         node.marked = true;
 
-        for (int adjNodeIndex: node.adjacentNodes) {
-            dfs(boardGraph, boardGraph.nodes[adjNodeIndex], word);
+        for (MyGraph.Node adjNode: node.adjacentNodes) {
+            dfs(adjNode, word);
         }
 
         // change to not visited for another path
@@ -82,7 +82,7 @@ public class BoggleSolver {
     
         private class Node {
             private char letter;
-            private Bag<Integer> adjacentNodes;
+            private ArrayList<Node> adjacentNodes;
             private boolean marked;
         }
     
@@ -94,20 +94,29 @@ public class BoggleSolver {
             // loop board
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    int index = i * cols + j;
                     Node node = new Node();
                     node.letter = board.getLetter(i, j);
-                    node.adjacentNodes = new Bag<Integer>();
-                    nodes[index] = node;
+                    node.adjacentNodes = new ArrayList<Node>();
+                    nodes[i * cols + j] = node;
+                }
+            }
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    int index = i * cols + j;
                     // adjacent dices
                     for (int n = -1; n <= 1; n++) {
                         for (int m = -1; m <= 1; m++) {
                             if (n == 0 && m == 0) {
                                 continue;
                             }
-            
+
                             if ((i + n >= 0) && (i + n < rows) && (j + m >= 0) && (j + m < cols)) {
-                                nodes[index].adjacentNodes.add((i + n) * cols + j + m);
+                                int temp = (i + n) * cols + j + m;
+                                if (!nodes[index].adjacentNodes.contains(nodes[temp])) {
+                                    nodes[index].adjacentNodes.add(nodes[temp]);
+                                    nodes[temp].adjacentNodes.add(nodes[index]);
+                                }
                             }
                         }
                     }
@@ -120,7 +129,7 @@ public class BoggleSolver {
     public static void main(String[] args) {
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
-        BoggleBoard board = new BoggleBoard(args[1]);
+        BoggleBoard board = new BoggleBoard();
         BoggleSolver solver = new BoggleSolver(dictionary);
         int score = 0, count = 0;
         Stopwatch stopwatch = new Stopwatch();
