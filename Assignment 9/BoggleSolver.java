@@ -32,14 +32,14 @@ public class BoggleSolver {
         if (board == null) throw new IllegalArgumentException("Argument is null");
         wordSET = new SET<String>();
         MyGraph boardGraph = new MyGraph(board);
-        for (MyGraph.Node node : boardGraph.nodes) {
+        for (Node node : boardGraph.nodes) {
             dfs(node, "");
         }
         return wordSET;
     }
 
     // depth-first search
-    private void dfs(MyGraph.Node node, String word) {
+    private void dfs(Node node, String word) {
         if (node.marked) return;
 
         char letter = node.letter;
@@ -53,7 +53,7 @@ public class BoggleSolver {
          // mark as visited only after dictionary has words with this prefix
         node.marked = true;
 
-        for (MyGraph.Node adjNode: node.adjacentNodes) {
+        for (Node adjNode: node.adjacentNodes) {
             dfs(adjNode, word);
         }
 
@@ -77,51 +77,53 @@ public class BoggleSolver {
         return 0;
     }
 
-    private class MyGraph {
+    private static class Node {
+        private char letter;
+        private ArrayList<Node> adjacentNodes;
+        private boolean marked;
+    }
+
+    private static class MyGraph {
         private final Node[] nodes;
-    
-        private class Node {
-            private char letter;
-            private ArrayList<Node> adjacentNodes;
-            private boolean marked;
-        }
     
         public MyGraph(BoggleBoard board) {
             int rows = board.rows();
             int cols = board.cols();
-            nodes = new Node[rows * cols];
+            int v = rows * cols;
+            nodes = new Node[v];
     
-            // loop board
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    Node node = new Node();
-                    node.letter = board.getLetter(i, j);
-                    node.adjacentNodes = new ArrayList<Node>();
-                    nodes[i * cols + j] = node;
-                }
+            // loop board. i / cols = row, i % cols = col
+            for (int i = 0; i < v; i++) {
+                Node node = new Node();
+                node.letter = board.getLetter(i / cols, i % cols);
+                node.adjacentNodes = new ArrayList<Node>();
+                nodes[i] = node;
             }
 
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    int index = i * cols + j;
-                    // adjacent dices
-                    for (int n = -1; n <= 1; n++) {
-                        for (int m = -1; m <= 1; m++) {
-                            if (n == 0 && m == 0) {
-                                continue;
-                            }
-
-                            if ((i + n >= 0) && (i + n < rows) && (j + m >= 0) && (j + m < cols)) {
-                                int temp = (i + n) * cols + j + m;
-                                if (!nodes[index].adjacentNodes.contains(nodes[temp])) {
-                                    nodes[index].adjacentNodes.add(nodes[temp]);
-                                    nodes[temp].adjacentNodes.add(nodes[index]);
-                                }
-                            }
-                        }
-                    }
-                }
+            // adjacent dices
+            for (int j = 0; j < v; j++) {
+                // down
+                if (j + cols < v && !nodes[j].adjacentNodes.contains(nodes[j + cols])) addAdjs(j, j + cols);
+                // up
+                if (j - cols >= 0 && !nodes[j].adjacentNodes.contains(nodes[j - cols])) addAdjs(j, j - cols);
+                // left
+                if (j % cols != 0 && !nodes[j].adjacentNodes.contains(nodes[j - 1])) addAdjs(j, j - 1);
+                // right
+                if (j % cols < cols - 1 && !nodes[j].adjacentNodes.contains(nodes[j + 1])) addAdjs(j, j + 1);
+                // up left
+                if (j % cols != 0 && j / cols != 0 && !nodes[j].adjacentNodes.contains(nodes[j - cols - 1])) addAdjs(j, j - cols - 1);
+                // up right
+                if (j % cols < cols - 1 && j / cols != 0 && !nodes[j].adjacentNodes.contains(nodes[j - cols + 1])) addAdjs(j, j - cols + 1);
+                // down left
+                if (j % cols != 0 && j / cols != rows - 1 && !nodes[j].adjacentNodes.contains(nodes[j + cols - 1])) addAdjs(j, j + cols - 1);
+                // down right
+                if (j % cols < cols - 1 && j / cols != rows - 1 && !nodes[j].adjacentNodes.contains(nodes[j + cols + 1])) addAdjs(j, j + cols + 1);
             }
+        }
+
+        private void addAdjs(int i, int j) {
+            nodes[i].adjacentNodes.add(nodes[j]);
+            nodes[j].adjacentNodes.add(nodes[i]);
         }
     }
 
@@ -129,7 +131,7 @@ public class BoggleSolver {
     public static void main(String[] args) {
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
-        BoggleBoard board = new BoggleBoard();
+        BoggleBoard board = new BoggleBoard(args[1]);
         BoggleSolver solver = new BoggleSolver(dictionary);
         int score = 0, count = 0;
         Stopwatch stopwatch = new Stopwatch();
