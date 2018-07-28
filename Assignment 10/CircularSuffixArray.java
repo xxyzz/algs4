@@ -6,7 +6,8 @@
  *  a sorted array of the n circular suffixes of a string of length n
  *
  ******************************************************************************/
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.BinaryStdIn;
+import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class CircularSuffixArray {
     // cutoff to insertion sort
@@ -36,7 +37,7 @@ public class CircularSuffixArray {
     private void sort(String s, int lo, int hi, int d) {
         // cutoff to insertion sort for small subarrays
         if (hi <= lo + CUTOFF) {
-            insertion(s, lo, hi, d);
+            insertion(s, lo, hi, d); 
             return;
         }
 
@@ -64,9 +65,10 @@ public class CircularSuffixArray {
 
     // is v less than w, starting at character d
     private boolean less(String s, int v, int w, int d) {
+        int indexV = index[v], indexW = index[w];
         for (int i = d; i < n; i++) {
-            if (charAt(s, index(v), d) < charAt(s, index(w), d)) return true;
-            if (charAt(s, index(v), d) > charAt(s, index(w), d)) return false;
+            if (charAt(s, indexV, i) < charAt(s, indexW, i)) return true;
+            if (charAt(s, indexV, i) > charAt(s, indexW, i)) return false;
         }
         return false;
     }
@@ -92,8 +94,12 @@ public class CircularSuffixArray {
 
     // unit testing (required)
     public static void main(String[] args) {
-        CircularSuffixArray circularSuffixArray = new CircularSuffixArray("ABRACADABRA!");
-        StdOut.println("length: " + circularSuffixArray.length());
-        StdOut.println("index(0): " + circularSuffixArray.index(0));
+        String s = BinaryStdIn.readString();
+        CircularSuffixArray circularSuffixArray = new CircularSuffixArray(s);
+        BinaryStdOut.write("length: " + circularSuffixArray.length() + "\n");
+        for (int i = 0; i < circularSuffixArray.length(); i++) {
+            BinaryStdOut.write(circularSuffixArray.index(i) + " ");
+        }
+        BinaryStdOut.close();
     }
 }
