@@ -10,6 +10,8 @@ import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class BurrowsWheeler {
+    private static final int R = 256;    // radix
+
     // apply Burrows-Wheeler transform, reading from standard input and writing to standard output
     public static void transform() {
         String s = BinaryStdIn.readString();
@@ -18,7 +20,7 @@ public class BurrowsWheeler {
         // first
         for (int i = 0; i < n; i++) {
             if (csa.index(i) == 0) {
-                BinaryStdOut.write(i + "\n");
+                BinaryStdOut.write(i);
                 break;
             }
         }
@@ -31,7 +33,26 @@ public class BurrowsWheeler {
 
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
     public static void inverseTransform() {
+        int first = BinaryStdIn.readInt();
+        String tSTring = BinaryStdIn.readString();
+        int n = tSTring.length();
+        int[] next = new int[n], count = new int[R + 1];
 
+        // key-indexed counting
+        // Compute frequency counts.
+        for (int i = 0; i < n; i++)
+            count[tSTring.charAt(i) + 1]++;
+        // Transform counts to indices.
+        for (int r = 0; r < R; r++)
+            count[r + 1] += count[r];
+        // Distribute the records.
+        for (int i = 0; i < n; i++)
+            next[count[tSTring.charAt(i)]++] = i;
+        // restore the string
+        for (int i = next[first], j = 0 ; j < n; j++, i = next[i]) {
+            BinaryStdOut.write(tSTring.charAt(i));
+        }
+        BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply Burrows-Wheeler transform
