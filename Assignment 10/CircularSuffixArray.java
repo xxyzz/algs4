@@ -1,7 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 CircularSuffixArray.java
- *  Execution:    java-algs4 CircularSuffixArray
- *  Dependencies:
+ *  Execution:    java-algs4 CircularSuffixArray < burrows/abra.txt
+ *  Dependencies: BinaryStdIn, BinaryStdOut
  *
  *  a sorted array of the n circular suffixes of a string of length n
  *

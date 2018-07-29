@@ -1,6 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 BurrowsWheeler.java
- *  Execution:    java-algs4 BurrowsWheeler
+ *  Execution:    java-algs4 BurrowsWheeler - < burrows/abra.txt | java-algs4 BurrowsWheeler +
+ *      java-algs4 BurrowsWheeler - < burrows/abra.txt | java-algs4 edu.princeton.cs.algs4.HexDump 16
  *  Dependencies: BinaryStdIn, BinaryStdOut, CircularSuffixArray
  *
  *  
