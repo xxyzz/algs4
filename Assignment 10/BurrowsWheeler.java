@@ -50,7 +50,7 @@ public class BurrowsWheeler {
         for (int i = 0; i < n; i++)
             next[count[tSTring.charAt(i)]++] = i;
         // restore the string
-        for (int i = next[first], j = 0 ; j < n; j++, i = next[i]) {
+        for (int i = next[first], j = 0; j < n; j++, i = next[i]) {
             BinaryStdOut.write(tSTring.charAt(i));
         }
         BinaryStdOut.close();

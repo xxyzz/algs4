@@ -1,8 +1,8 @@
 /******************************************************************************
  *  Compilation:  javac-algs4 MoveToFront.java
  *  Execution:    java-algs4 MoveToFront - < burrows/abra.txt | java-algs4 edu.princeton.cs.algs4.HexDump 16
- *      java-algs4 MoveToFront - < burroes/abra.txt | java-algs4 MoveToFront +
- *  Dependencies:
+ *      java-algs4 MoveToFront - < burrows/abra.txt | java-algs4 MoveToFront +
+ *  Dependencies: BinaryStdIn, BinaryStdOut
  *
  *  
  *
@@ -18,7 +18,7 @@ public class MoveToFront {
         for (char i = 0; i < R; i++)
             characters[i] = i;
 
-        while(!BinaryStdIn.isEmpty()) {
+        while (!BinaryStdIn.isEmpty()) {
             char inputChar = BinaryStdIn.readChar();
             
             for (char i = 0; i < R; i++) {
@@ -37,7 +37,19 @@ public class MoveToFront {
 
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
+        char[] characters = new char[R];
+        for (char i = 0; i < R; i++)
+            characters[i] = i;
 
+        while (!BinaryStdIn.isEmpty()) {
+            int inputNumber = BinaryStdIn.readInt(8);
+            char movedChar = characters[inputNumber];
+            BinaryStdOut.write(movedChar);
+            System.arraycopy(characters, 0, characters, 1, inputNumber);
+            // move to front
+            characters[0] = movedChar;
+        }
+        BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply move-to-front encoding
