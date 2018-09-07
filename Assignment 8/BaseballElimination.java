@@ -21,8 +21,8 @@ public class BaseballElimination {
     // private SeparateChainingHashST<String, Integer> teams;
     private List<String> teams;
     private int[] w;    // wins
-    private int[] r;    // losses
-    private int[] l;    // remaining games
+    private int[] l;    // losses
+    private int[] r;    // remaining games
     private int[][] g;  // g[i][j] games left to play against team j
     private Bag<String> subsetR;
 
@@ -34,8 +34,8 @@ public class BaseballElimination {
             // teams = new SeparateChainingHashST<>();
             teams = new ArrayList<>();
             w = new int[n];
-            r = new int[n];
             l = new int[n];
+            r = new int[n];
             g = new int[n][n];
             for (int i = 0; i < n; i++) {
                 // teams.put(in.readString(), i);
