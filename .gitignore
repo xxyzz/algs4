@@ -1,5 +1,6 @@
 *.class
 *.zip
+.DS_Store
 percolation/
 PercolationVisualizer.*
 queues/

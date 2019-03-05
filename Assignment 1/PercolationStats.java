@@ -8,6 +8,8 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
+
 public class PercolationStats {
     private final double mean;
     private final double stddev;
@@ -37,25 +39,32 @@ public class PercolationStats {
         confidenceLo = mean - 1.96 * stddev / Math.sqrt(trials);
         confidenceHi = mean + 1.96 * stddev / Math.sqrt(trials);
     }
+
     // sample mean of percolation threshold
     public double mean() {
         return mean;
     }
+
     // sample standard deviation of percolation threshold
     public double stddev() {
         return stddev;
     }
+
     // low  endpoint of 95% confidence interval
     public double confidenceLo() {
         return confidenceLo;
     }
+
     // high endpoint of 95% confidence interval
     public double confidenceHi() {
         return confidenceHi;
     }
+
     // test client (described below)
     public static void main(String[] args) {
+        Stopwatch timer = new Stopwatch();
         PercolationStats ps = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        StdOut.println("Total running time: " + timer.elapsedTime() + " seconds");
 
         String confidence = "[" + ps.confidenceLo() + ", " + ps.confidenceHi() + "]";
         StdOut.println("mean                    = " + ps.mean());
