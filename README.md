@@ -1,12 +1,17 @@
-# [Coursera Algorithms](https://algs4.cs.princeton.edu/home/)
+# [Algorithms(4th Edition) assignments and exercises](https://algs4.cs.princeton.edu/home/)
 
 ```
+// Adding external JAR to VSCodium
+$ cp /usr/local/lift/lib/algs4.jar lib/algs4.jar
+
 // Compile
 $ javac-algs4 *.java
+
 // Static Code Analysis Tools
-$ findbugs-algs4 *.class
-$ pmd-algs4 .
-$ checkstyle-algs4 *.java
+$ spotbugs *.class
+$ pmd .
+$ checkstyle -coursera *.java
+
 // Run
 $ java-algs4 HelloWorld
 ```
@@ -15,8 +20,7 @@ $ java-algs4 HelloWorld
 
 ## Assignment 1: percolation
 
-- [Specification](http://coursera.cs.princeton.edu/algs4/assignments/percolation.html)
-- [Checklist](http://coursera.cs.princeton.edu/algs4/checklists/percolation.html)
+- [Specification](https://coursera.cs.princeton.edu/algs4/assignments/percolation/specification.php)
 
 ## Assignment 2: queues
 
