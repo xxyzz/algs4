@@ -260,3 +260,111 @@ public static String exR1(int n)
 
 // 311361142246
 ```
+
+- 1.1.17 Criticize the following recursive function:
+
+```java
+public static String exR2(int n)
+{
+    String s = exR2(n-3) + n + exR2(n-2) + n;
+    if (n <= 0) return "";
+    return s;
+}
+```
+
+*Answer* : The base case will never be reached. A call to `exR2(3)` will result in calls to
+`exR2(0)`, `exR2(-3)`, `exR3(-6)`, and so forth until a `StackOverflowError` occurs.
+
+- 1.1.18 Consider the following recursive function:
+
+```java
+public static int mystery(int a, int b)
+{
+    if (b == 0)     return 0;
+    if (b % 2 == 0) return mystery(a+a, b/2);
+    return mystery(a+a, b/2) + a;
+}
+```
+
+What are the values of `mystery(2, 25)` and `mystery(3, 11)`? Given positive integers `a` and `b` describe what value `mystery(a, b)` computes. Answer the same question, but replace `+` with `*` and replace `return 0` with `return 1`.
+
+`mystery(2, 25)`: 50, `mystery(3, 11)`: 33.
+
+Replce: 33554432, 177147
+
+- 1.1.19 Run the following program on your computer:
+
+```java
+public class Fibonacci
+{
+    public static long F(int N)
+    {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+        return F(N-1) + F(N-2);
+    }
+    public static void main(String[] args)
+    {
+        for (int N = 0; N < 100; N++)
+            StdOut.println(N + " " + F(N));
+    }
+}
+```
+
+What is the largest value of N for which this program takes less 1 hour to compute the value of F(N)? Develop a better implementation of F(N) that saves computed values in an array.
+
+43 433494437.
+
+```java
+public class Fibonacci
+{
+    public static long F(int N, int[] arr)
+    {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+        if (arr[N] == 0)
+            arr[N] = arr[N-1] + arr[N-2];
+        return arr[N-1] + arr[N-2];
+    }
+
+    public static void main(String[] args)
+    {
+        int[] arr = new int[100];
+        arr[0] = 0;
+        arr[1] = 1;
+        
+        for (int N = 0; N < 100; N++)
+            System.out.println(N + " " + F(N, arr));
+    }
+}
+```
+
+- 1.1.20 Write a recursive static method that computes the value of `ln(N!)`
+
+logarithm product rule: log<sub>b</sub>(xy) = log<sub>b</sub>x + log<sub>b</sub>y
+
+proof:
+
+m = log<sub>b</sub>x -> x = b<sup>m</sup>
+
+n = log<sub>b</sub>y -> y = b<sup>n</sup>
+
+log<sub>b</sub>(b<sup>m</sup> * b<sup>n</sup>) = log<sub>b</sub>(b<sup>m+n</sup>) = m + n = log<sub>b</sub>x + log<sub>b</sub>y
+
+```java
+import java.lang.Math;
+
+public class Log
+{
+    public static double ln(int N)
+    {
+        if (N == 1) return 0;
+        return Math.log(N) + ln(N-1);
+    }
+
+    public static void main(String[] args)
+    {
+        System.out.println(ln(4));
+    }
+}
+```
