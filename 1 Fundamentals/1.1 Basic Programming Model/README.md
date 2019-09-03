@@ -368,3 +368,131 @@ public class Log
     }
 }
 ```
+
+- 1.1.21 Write a program that reads in lines from standard input with each line containing a name and two integers and then uses `printf()` to print a table with a column of the names, the integers, and the result of dividing the first by the second, accurate to three decimal places. You could use a program like this to tabulate batting averages for baseball players or grades for students.
+
+```java
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
+public class PrintTable {
+    public static void main(String[] args) {
+        In in = new In(args[0]);
+        while (in.hasNextLine()) {
+            String name = in.readString();
+            int a = in.readInt();
+            int b = in.readInt();
+            StdOut.printf("%s  %d  %d  %.3f\n", name, a, b, (float)a/b);
+        }
+    }
+}
+```
+
+- 1.1.22 Write a version of `BinarySearch` that uses the recursive `rank()` given on page 25 and traces the method calls. Each time the recursive method is called, print the argument values `lo` and `hi`, indented by the depth of the recursion. *Hint*: Add an argument to the recursive method that keeps track of the depth.
+
+```java
+import edu.princeton.cs.algs4.StdOut;
+
+public class BinarySearch {
+    public static int rank(int key, int[] a)
+    {  return rank(key, a, 0, a.length - 1, 0);  }
+
+    public static int rank(int key, int[] a, int lo, int hi, int depth)
+    {   // Index of key in a[], if present, is not smaller than lo
+        //                                  and not larger than hi.
+        for (int i = 0; i < depth; i++)
+            StdOut.printf("\t");
+
+        StdOut.printf("lo: %d, hi: %d\n", lo, hi);
+        depth++;
+
+        if (lo > hi) return -1;
+        int mid = lo + (hi - lo) / 2;
+        if      (key < a[mid]) return rank(key, a, lo, mid - 1, depth);
+        else if (key > a[mid]) return rank(key, a, mid + 1, hi, depth);
+        else                   return mid;
+    }
+
+    public static void main(String[] args) {
+        rank(1, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    }
+}
+```
+
+- 1.1.23 Add to the `BinarySearch` test client the ability to respond to a second argument: `+` to print numbers from standard input that are not in the whitelist, `-` to print numbers that are in the whitelist.
+
+```java
+import edu.princeton.cs.algs4.StdOut;
+
+public class BinarySearch {
+    public static int rank(int key, int[] a, boolean plus)
+    {  return rank(key, a, 0, a.length - 1, plus);  }
+
+    public static int rank(int key, int[] a, int lo, int hi, boolean plus)
+    {   // Index of key in a[], if present, is not smaller than lo
+        //                                  and not larger than hi.
+        if (plus) {
+            for (int i = 0; i < a.length; i++)
+                if (i < lo || i > hi)
+                    StdOut.printf("%d ", a[i]);
+        }
+        else {
+            for (int j = lo; j <= hi; j++)
+                StdOut.printf("%d ", a[j]);
+        }
+
+        StdOut.println();
+
+        if (lo > hi) return -1;
+        int mid = lo + (hi - lo) / 2;
+        if      (key < a[mid]) return rank(key, a, lo, mid - 1, plus);
+        else if (key > a[mid]) return rank(key, a, mid + 1, hi, plus);
+        else                   return mid;
+    }
+
+    public static void main(String[] args) {
+        boolean plus = false;
+        if (args[0].equals("+"))
+            plus = true;
+        rank(1, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, plus);
+    }
+}
+```
+
+- 1.1.24 Give the sequence of values of `p` and `q` that are computed when Euclid’s algorithm is used to compute the greatest common divisor of 105 and 24. Extend the code given on page 4 to develop a program Euclid that takes two integers from the command line and computes their greatest common divisor, printing out the two arguments for each call on the recursive method. Use your program to compute the greatest common divisor of 1111111 and 1234567.
+
+```java
+import edu.princeton.cs.algs4.StdOut;
+
+public class GCD {
+    public static int gcd(int p, int q)
+    {
+        StdOut.printf("%d %d\n", p, q);
+        if (q == 0) return p;
+        int r = p % q;
+        return gcd(q, r);
+    }
+
+    public static void main(String[] args) {
+        if (args.length >= 2)
+            StdOut.println(gcd(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+    }
+}
+```
+
+```
+$ java-algs4 GCD 1111111 1234567
+1111111 1234567
+1234567 1111111
+1111111 123456
+123456 7
+7 4
+4 3
+3 1
+1 0
+1
+```
+
+- 1.1.25 Use mathematical induction to prove that Euclid’s algorithm computes the greatest common divisor of any pair of nonnegative integers `p` and `q`.
+
+[Euclidean algorithm - Wikipedia](https://en.wikipedia.org/wiki/Euclidean_algorithm#Proof_of_validity)
