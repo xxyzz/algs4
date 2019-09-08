@@ -130,3 +130,63 @@ public class PrimeMatrix {
 ```
 
 - 1.1.31 *Random connections*. Write a program that takes as command-line arguments an integer `N` and a double value `p` (between 0 and 1), plots `N` equally spaced dots of size .05 on the circumference of a circle, and then, with probability `p` for each pair of points, draws a gray line connecting them.
+
+```java
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class RandomConnections {
+    public static class PointPair {
+        public int a;
+        public int b;
+        public boolean drawn;
+
+        public PointPair(int a, int b) {
+            this.a = a;
+            this.b = b;
+            this.drawn = false;
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = Integer.parseInt(args[0]);
+        double p = Float.parseFloat(args[1]);
+        int r = 1;    // circle radius
+        Point2D[] points = new Point2D[n];
+        double degrees = 360 / n;
+        StdDraw.setPenRadius(0.05);
+        StdDraw.setScale(-1, 1);
+
+        // print all points
+        for (int i = 1; i < n + 1; i++) {
+            double radians = Math.toRadians(degrees * i);
+            points[i - 1] = new Point2D(r * Math.cos(radians), r * Math.sin(radians));
+            points[i - 1].draw();
+        }
+
+        StdDraw.setPenRadius(0.01);
+        StdDraw.setPenColor(StdDraw.GRAY);
+        int allLinesCount = n * (n - 1) / 2;
+        // number of lines = numebr of total point pairs * probability
+        int linesCount = (int)(allLinesCount * p);
+        PointPair[] drawnPairs = new PointPair[allLinesCount];
+
+        // create all point pairs
+        int k = 0;
+        for (int i = 0; i < n - 1; i++)
+            for (int j = i + 1; j < n; j++)
+                drawnPairs[k++] = new PointPair(i, j);
+
+        // print random pair lines
+        for (int i = 0; i < linesCount; i++) {
+            int choosenPair = 0;
+            do {
+                choosenPair = StdRandom.uniform(0, allLinesCount);
+            } while (drawnPairs[choosenPair].drawn);
+            drawnPairs[choosenPair].drawn = true;
+            points[drawnPairs[choosenPair].a].drawTo(points[drawnPairs[choosenPair].b]);
+        }
+    }
+}
+```
