@@ -13,3 +13,4 @@ seam/
 boggle/
 burrows/
 lib
+!1\ Fundamentals/*/*.png

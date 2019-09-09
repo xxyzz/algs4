@@ -165,7 +165,7 @@ public class RandomConnections {
             points[i - 1].draw();
         }
 
-        StdDraw.setPenRadius(0.01);
+        StdDraw.setPenRadius(0.005);
         StdDraw.setPenColor(StdDraw.GRAY);
         int allLinesCount = n * (n - 1) / 2;
         // number of lines = numebr of total point pairs * probability
@@ -190,3 +190,13 @@ public class RandomConnections {
     }
 }
 ```
+
+```
+$ javac-algs4 *.java
+$ java-algs4 RandomConnections 4 0.5
+$ java-algs4 RandomConnections 20 1
+```
+
+![java-algs4 RandomConnections 20 1](rc.png)
+
+- 1.1.32 *Histogram*. Suppose that the standard input stream is a sequence of `double` values. Write a program that takes an integer *N* and two `double` values *l* and *r* from the command line and uses `StdDraw` to plot a histogram of the count of the numbers in the standard input stream that fall in each of the `N` intervals defined by dividing (*l* , *r*) into *N* equal-sized intervals.
