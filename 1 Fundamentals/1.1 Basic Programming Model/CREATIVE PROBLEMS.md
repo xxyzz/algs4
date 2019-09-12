@@ -200,3 +200,183 @@ $ java-algs4 RandomConnections 20 1
 ![java-algs4 RandomConnections 20 1](rc.png)
 
 - 1.1.32 *Histogram*. Suppose that the standard input stream is a sequence of `double` values. Write a program that takes an integer *N* and two `double` values *l* and *r* from the command line and uses `StdDraw` to plot a histogram of the count of the numbers in the standard input stream that fall in each of the `N` intervals defined by dividing (*l* , *r*) into *N* equal-sized intervals.
+
+```java
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
+
+public class Histogram {
+    public static void main(String[] args) {
+        int           n = Integer.parseInt(args[0]);
+        double        l = Double.parseDouble(args[1]);
+        double        r = Double.parseDouble(args[2]);
+        double[]  input = StdIn.readAllDoubles();
+        double interval = (r - l) / n;
+        int[]     count = new int[n];
+
+        StdDraw.setScale(0, 10);
+
+        for (double i : input)
+            count[(int) (i / interval)]++;
+
+        for (int i = 0; i < n; i++) {
+            RectHV rect = new RectHV(i * interval, 0, (i + 1) * interval, count[i]);
+            rect.draw();
+        }
+    }
+}
+```
+
+```
+$ cat test
+0.5 1 1.5 2 2.5 2.1
+$ javac-algs4 *.java
+$ java-algs4 Histogram 3 0 3 < test
+```
+
+- 1.1.33 *Matrix library*. Write a library `Matrix` that implements the following API:
+
+```
+public class Matrix
+
+    static     double dot(double[] x, double[] y)         // vector dot product
+    static double[][] mult(double[][] a, double[][] b)    // matrix-matrix product
+    static double[][] transpose(double[][] a)             // transpose
+    static   double[] mult(double[][] a, double[] x)      // matrix-vector product
+    static   double[] mult(double[] y, double[][] a)      // vector-matrix product
+```
+
+Develop a test client that reads values from standard input and tests all the methods.
+
+[Matrix multiplication as composition | Essence of linear algebra, chapter 4](https://www.youtube.com/watch?v=XkY2DOUCWMU&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+
+```java
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+import java.util.Arrays;
+
+public class Matrix {
+    // vector dot product
+    static double dot(double[] x, double[] y) {
+        int sum = 0;
+        if (x.length == y.length) {
+            for (int i = 0; i < x.length; i++)
+                sum += x[i] * y[i];
+        }
+        return sum;
+    }
+
+    // matrix-matrix product
+    static double[][] mult(double[][] a, double[][] b) {
+        double[][] ans = new double[a.length][b[0].length];
+        if (a[0].length == b.length) {
+            for (int i = 0; i < a.length; i++) {
+                for (int j = 0; j < b[0].length; j++) {
+                    double[] column = new double[b.length];
+                    for (int k = 0; k < b.length; k++)
+                        column[k] = b[k][j];
+                    
+                    ans[i][j] = dot(a[i], column);
+                }
+            }
+        }
+        return ans;
+    }
+
+    // transpose
+    static double[][] transpose(double[][] a) {
+        double[][] ans = new double[a[0].length][a.length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[0].length; j++)
+                ans[j][i] = a[i][j];
+        }
+        return ans;
+    }
+
+    // matrix-vector product
+    static double[] mult(double[][] a, double[] x) {
+        double[] ans = new double[a.length];
+        if (a[0].length == x.length) {
+            for (int i = 0; i < a.length; i++)
+                ans[i] = dot(a[i], x);
+        }
+        return ans;
+    }
+
+    // vector-matrix product
+    static double[] mult(double[] y, double[][] a) {
+        double[] ans = new double[a[0].length];
+        if (a.length == y.length) {
+            for (int j = 0; j < a[0].length; j++) {
+                double[] column = new double[a.length];
+                for (int k = 0; k < a.length; k++)
+                    column[k] = a[k][j];
+                
+                ans[j] = dot(y, column);
+            }
+        }
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        In in = new In(args[0]);
+
+        int arrLen = in.readInt();
+        double[] x = new double[arrLen];
+        for (int i = 0; i < arrLen; i++)
+            x[i] = in.readInt();
+
+        arrLen = in.readInt();
+        double[] y = new double[arrLen];
+        for (int i = 0; i < arrLen; i++)
+            y[i] = in.readInt();
+
+        int a_row = in.readInt();
+        int a_col = in.readInt();
+        double[][] a = new double[a_row][a_col];
+        for (int i = 0; i < a_row; i++) {
+            for (int j = 0; j < a_col; j++)
+                a[i][j] = in.readInt();
+        }
+
+        int b_row = in.readInt();
+        int b_col = in.readInt();
+        double[][] b = new double[b_row][b_col];
+        for (int i = 0; i < b_row; i++) {
+            for (int j = 0; j < b_col; j++)
+                b[i][j] = in.readInt();
+        }
+
+        StdOut.printf("x: %s\n\n", Arrays.toString(x));
+        StdOut.printf("y: %s\n\n", Arrays.toString(y));
+        StdOut.printf("a: %s\n\n", Arrays.deepToString(a));
+        StdOut.printf("b: %s\n\n", Arrays.deepToString(b));
+        // StdOut.printf("x • y: %f\n\n", dot(x, y));
+        // StdOut.printf("a × b: %s\n\n", Arrays.deepToString(mult(a, b)));
+        // StdOut.printf("Transpose(a): %s\n\n", Arrays.deepToString(transpose(a)));
+        StdOut.printf("a × x: %s\n\n", Arrays.toString(mult(a, x)));
+        StdOut.printf("y × b: %s\n\n", Arrays.toString(mult(y, b)));
+    }
+}
+```
+
+```
+$ cat test
+3
+1 2 3
+
+3
+4 5 6
+
+2 3
+1 2 3
+4 5 6
+
+3 2
+1 4
+2 5
+3 6
+$ javac-algs4 *.java
+$ java-algs4 Matrix test
+```
