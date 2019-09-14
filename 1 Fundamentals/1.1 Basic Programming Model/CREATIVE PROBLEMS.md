@@ -380,3 +380,18 @@ $ cat test
 $ javac-algs4 *.java
 $ java-algs4 Matrix test
 ```
+
+- 1.1.34 *Filtering*. Which of the following *require* saving all the values from standard input (in an array, say), and which could be implemented as a filter using only a fixed number of variables and arrays of fixed size (not dependent on *N*)? For each, the input comes from standard input and consists of *N* real numbers between 0 and 1.
+
+    0. Print the maximum and minimum numbers.
+    1. Print the median of the numbers.
+    2. Print the k th smallest value, for k less than 100.
+    3. Print the sum of the squares of the numbers.
+    4. Print the average of the N numbers.
+    5. Print the percentage of numbers greater than the average.
+    6. Print the N numbers in increasing order.
+    7. Print the N numbers in random order.
+
+    All values: 0, 1, 3, 4, 5, 6, 7
+
+    Filter: 2
