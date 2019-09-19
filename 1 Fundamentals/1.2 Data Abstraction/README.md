@@ -312,6 +312,22 @@ public class SmartDate {
 
 - 1.2.12 Add a method `dayOfTheWeek()` to `SmartDate` that returns a `String` value `Monday, Tuesday, Wednesday, Thursday, Friday, Saturday`, or `Sunday`, giving the appropriate day of the week for the date. You may assume that the date is in the 21st century.
 
+[Calendar Curiosities](http://www.cadaeic.net/calendar.htm)
+
+[Determination of the day of the week - Wikipedia](https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Implementation-dependent_methods)
+
+[operator keyword - C comma in ternary statement - Stack Overflow](https://stackoverflow.com/questions/28520421/c-comma-in-ternary-statement)
+
+```java
+private static final int[] DayOfTheWeek = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+private static String dayOfTheWeek(int m, int d, int y) {
+    if (!isValid(m, d, y)) throw new IllegalArgumentException("Invalid date");
+
+    return DayOfTheWeek[(d+=m<3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7];
+}
+```
+
 - 1.2.13 Using our implementation of `Date` as a model (page 91), develop an implementation of `Transaction`.
 
 [Transaction.java](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Transaction.java.html)
