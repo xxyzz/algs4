@@ -129,3 +129,90 @@ public class Rational {
 $ javac-algs4 *.java
 $ java-algs4 -ea Rational
 ```
+
+- 1.2.18 *Variance for accumulator*. Validate that the following code, which adds the methods `var()` and `stddev()` to `Accumulator`, computes both the mean and variance of the numbers presented as arguments to `addDataValue()`:
+
+    ```java
+    public class Accumulator
+    {
+        private double m;
+        private double s;
+        private int N;
+
+        public void addDataValue(double x)
+        {
+            N++;
+            s = s + 1.0 * (N-1) / N * (x - m) * (x - m);
+            m = m + (x - m) / N;
+        }
+
+        public double mean()
+        {  return m;  }
+        
+        public double var()
+        {  return s/(N - 1);  }
+
+        public double stddev()
+        {  return Math.sqrt(this.var());  }
+    }
+    ```
+
+This implementation is less susceptible to roundoff error than the straightforward im- plementation based on saving the sum of the squares of the numbers.
+
+- 1.2.19 *Parsing*. Develop the parse constructors for your `Date` and `Transaction` implementations of Exercise 1.2.13 that take a single `String` argument to specify the initialization values, using the formats given in the table below.
+
+    *Partial solution:*
+
+    ```java
+    public Date(String date)
+    {
+        String[] fields = date.split("/");
+        month = Integer.parseInt(fields[0]);
+        day   = Integer.parseInt(fields[1]);
+        year  = Integer.parseInt(fields[2]);
+    }
+    ```
+
+    type | format | example
+    -----|--------|---------
+    Date | integers separated by slashes | 5/22/1939
+    Transaction | customer, date, and amount, separated by whitespace | Turing 5/22/1939 11.99
+
+    [Date.java](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Date.java.html)
+    [Transaction.java](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Transaction.java.html)
+
+    ```java
+    /**
+     * Initializes new date specified as a string in form MM/DD/YYYY.
+     * @param date the string representation of this date
+     * @throws IllegalArgumentException if this date is invalid
+     */
+    public Date(String date) {
+        String[] fields = date.split("/");
+        if (fields.length != 3)
+            throw new IllegalArgumentException("Invalid date");
+        month = Integer.parseInt(fields[0]);
+        day   = Integer.parseInt(fields[1]);
+        year  = Integer.parseInt(fields[2]);
+        if (!isValid(month, day, year)) throw new IllegalArgumentException("Invalid date");
+    }
+
+    /**
+     * Initializes a new transaction by parsing a string of the form NAME DATE AMOUNT.
+     *
+     * @param  transaction the string to parse
+     * @throws IllegalArgumentException if {@code amount} 
+     *         is {@code Double.NaN}, {@code Double.POSITIVE_INFINITY},
+     *         or {@code Double.NEGATIVE_INFINITY}
+     */
+    public Transaction(String transaction) {
+        String[] a = transaction.split("\\s+");
+        if (a.length != 3)
+            throw new IllegalArgumentException("Invalid transaction");
+        who    = a[0];
+        when   = new Date(a[1]);
+        amount = Double.parseDouble(a[2]);
+        if (Double.isNaN(amount) || Double.isInfinite(amount))
+            throw new IllegalArgumentException("Amount cannot be NaN or infinite");
+    }
+    ```
